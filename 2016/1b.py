@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 import sys
+
 filename = sys.argv[1]
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
-        instructions = line.rstrip().split(', ')
-        location = [0,0]
+        instructions = line.rstrip().split(", ")
+        location = [0, 0]
         direction = 0
-        directions = ([0,1], [1,0], [0,-1], [-1,0])
-        rotations = {'R':-1, 'L':1}
+        directions = ([0, 1], [1, 0], [0, -1], [-1, 0])
+        rotations = {"R": -1, "L": 1}
         seen = {tuple(location)}
         done = False
         for inst in instructions:
