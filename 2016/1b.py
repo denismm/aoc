@@ -7,7 +7,7 @@ with open(filename, "r") as f:
         instructions = line.rstrip().split(", ")
         location = [0, 0]
         direction = 0
-        directions = ([0, 1], [1, 0], [0, -1], [-1, 0])
+        directions = ((0, 1), (1, 0), (0, -1), (-1, 0))
         rotations = {"R": -1, "L": 1}
         seen = {tuple(location)}
         done = False
@@ -16,8 +16,8 @@ with open(filename, "r") as f:
             direction %= 4
             steps = int(inst[1:])
             for i in range(steps):
-                location[0] += directions[direction][0]
-                location[1] += directions[direction][1]
+                for component in range(2):
+                    location[component] += directions[direction][component]
                 if tuple(location) in seen:
                     print(abs(location[0]) + abs(location[1]))
                     done = True
