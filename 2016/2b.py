@@ -5,16 +5,18 @@ import copy
 filename = sys.argv[1]
 with open(filename, "r") as f:
     pad = [
-        'XX1XX',
-        'X234X',
-        '56789',
-        'XABCX',
-        'XXDXX',
+        "XX1XX",
+        "X234X",
+        "56789",
+        "XABCX",
+        "XXDXX",
     ]
     # NB: first coord is from top, second is from left
-    location = [2,0]
+    location = [2, 0]
+
     def key_for_loc(coordinates):
         return pad[coordinates[0]][coordinates[1]]
+
     directions = {
         "U": [-1, 0],
         "D": [1, 0],
@@ -38,7 +40,7 @@ with open(filename, "r") as f:
                     new_location[component] = new_coord
                     # print(f"half-step to {new_location}")
             if new_location is not None:
-                if key_for_loc(new_location) != 'X':
+                if key_for_loc(new_location) != "X":
                     location = new_location
                     # print (f"stepped {character} to {location} ({key_for_loc(location)})")
                 else:
@@ -46,4 +48,4 @@ with open(filename, "r") as f:
                     pass
         # print(f"got {key_for_loc(location)} at  {location}")
         output.append(key_for_loc(location))
-    print(''.join(output))
+    print("".join(output))

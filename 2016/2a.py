@@ -4,12 +4,12 @@ import sys
 filename = sys.argv[1]
 with open(filename, "r") as f:
     pad = [
-        [ 1, 2, 3],
-        [ 4, 5, 6],
-        [ 7, 8, 9],
+        [1, 2, 3],
+        [4, 5, 6],
+        [7, 8, 9],
     ]
     # NB: first coord is from top, second is from left
-    location = [1,1]
+    location = [1, 1]
     directions = {
         "U": [-1, 0],
         "D": [1, 0],
@@ -29,4 +29,4 @@ with open(filename, "r") as f:
                     location[component] = new_coord
             # print (f"stepped {character} to {location}")
         output.append(str(pad[location[0]][location[1]]))
-    print(''.join(output))
+    print("".join(output))
