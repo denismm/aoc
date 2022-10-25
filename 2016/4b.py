@@ -5,6 +5,14 @@ import collections
 
 room_parser = re.compile(r"([a-z-]+)-(\d+)\[([a-z]{5})\]")
 
+a_ord = ord('a')
+def rot_letter(letter, n):
+    if letter == '-':
+        return ' '
+    else:
+        id = ord(letter) - a_ord
+        return chr(a_ord +  (id + n) % 26)
+
 filename = sys.argv[1]
 with open(filename, "r") as f:
     valid_id_sum = 0
@@ -18,7 +26,7 @@ with open(filename, "r") as f:
         letters = sorted(letter_count.keys(), key=lambda x: (-1 * letter_count[x], x))
         correct_checksum = "".join(letters[:5])
         if checksum == correct_checksum:
-            valid_id_sum += int(id)
-        # else:
-            # print(f"{checksum} != {correct_checksum}")
-    print(valid_id_sum)
+            rotation = int(id) % 26
+            realname = ''.join([rot_letter(x, rotation) for x in name])
+            if 'north' in realname:
+                print (realname, id )
