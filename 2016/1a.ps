@@ -1,0 +1,9 @@
+%!
+(1a.test)
+/filename arg
+/inputfile filename (r) file def
+/buffer 500 string def
+{
+    gridfile buffer readline not {exit} if
+    /line arg
+}
