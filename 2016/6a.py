@@ -11,10 +11,10 @@ with open(filename, "r") as f:
                 counts.append(collections.defaultdict(lambda: 0))
             counts[i][letter] += 1
     answers = [[],[]]
+    operators = (max, min)
     for c in counts:
-        top = max(c.values())
-        bottom = min(c.values())
-        for i, target in enumerate((top, bottom)):
+        for i in range(2):
+            target = operators[i](c.values())
             candidates = [k for k, v in c.items() if v == target]
             if len(candidates) != 1:
                 raise ValueError(f"no single solution: {candidates}")
