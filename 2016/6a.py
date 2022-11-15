@@ -10,11 +10,14 @@ with open(filename, "r") as f:
             if len(counts) <= i:
                 counts.append(collections.defaultdict(lambda: 0))
             counts[i][letter] += 1
-    answer = []
+    answers = [[],[]]
     for c in counts:
         top = max(c.values())
-        tops = [k for k, v in c.items() if v == top]
-        if len(tops) != 1:
-            raise ValueError(f"no single top: {tops}")
-        answer.append(tops[0])
-    print("".join(answer))
+        bottom = min(c.values())
+        for i, target in enumerate((top, bottom)):
+            candidates = [k for k, v in c.items() if v == target]
+            if len(candidates) != 1:
+                raise ValueError(f"no single solution: {candidates}")
+            answers[i].append(candidates[0])
+    for answer in answers:
+        print("".join(answer))
