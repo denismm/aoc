@@ -13,8 +13,8 @@ with open(filename, "r") as f:
     answer = []
     for c in counts:
         top = max(c.values())
-        tops = [k for k,v in c.items() if v == top]
+        tops = [k for k, v in c.items() if v == top]
         if len(tops) != 1:
-            raise ValueError(f'no single top: {tops}')
+            raise ValueError(f"no single top: {tops}")
         answer.append(tops[0])
-    print ("".join(answer))
+    print("".join(answer))
