@@ -5,11 +5,13 @@ import re
 filename = sys.argv[1]
 section_re = re.compile(r"([a-z]*)(?:\[([a-z]*)\])?")
 
+
 def get_aba(sequence):
     for i in range(len(sequence) - 2):
-        (a, b, c) = sequence[i:i+3]
+        (a, b, c) = sequence[i : i + 3]
         if a == c != b:
             yield (a, b)
+
 
 with open(filename, "r") as f:
     ssl_count = 0
