@@ -33,6 +33,8 @@ with open(filename, "r") as f:
                         display[id][x] = buffer[(x - angle) % display_width]
                 else:
                     raise ValueError(f"bad coord: {coord}")
+            else:
+                raise ValueError(f"bad line: {line}")
 pixel = [".", "#"]
 count = 0
 for row in display:
