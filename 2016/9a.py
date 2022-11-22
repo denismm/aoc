@@ -4,11 +4,11 @@ import re
 
 filename = sys.argv[1]
 
-compression_re = re.compile(r'\((\d+)x(\d+)\)')
+compression_re = re.compile(r"\((\d+)x(\d+)\)")
 with open(filename, "r") as f:
     full_length = 0
     for line in f:
-        input = re.sub(r'\s+', "", line)
+        input = re.sub(r"\s+", "", line)
         output = ""
         while len(input) > 0:
             m = compression_re.search(input)
@@ -19,9 +19,9 @@ with open(filename, "r") as f:
                 start = m.start()
                 end = m.end()
                 output += input[:start]
-                repeton = input[end:end+amount]
+                repeton = input[end : end + amount]
                 output += repeton * rep
-                input = input[end+amount:]
+                input = input[end + amount :]
             else:
                 output += input
                 input = ""
