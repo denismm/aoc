@@ -68,3 +68,4 @@ with open(filename, "r") as f:
         for bot in acting_bots:
             parse_rule(bot)
     print(comparisons[(17, 61)])
+    print(outputs[0] * outputs[1] * outputs[2])
