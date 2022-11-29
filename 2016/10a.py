@@ -20,15 +20,18 @@ with open(filename, "r") as f:
         if m:
             (chip, bot) = m.groups()
             chip = int(chip)
+            bot = int(bot)
             chip_rules.append((chip, bot))
         else:
             m = bot_re.match(line)
             if m:
-                rule_data = list(m.groups())
-                bot = rule_data[0]
+                (bot, t_a, id_a, t_b, id_b) = list(m.groups())
+                bot = int(bot)
+                id_a = int(id_a)
+                id_b = int(id_b)
                 if bot in bot_rules:
                     raise KeyError(f"two rules for bot {bot}")
-                targets = rule_data[1:3], rule_data[3:5]
+                targets = (t_a, id_a), (t_b, id_b)
                 bot_rules[bot] = targets
             else:
                 raise ValueError(f"Can't parse line {line}")
