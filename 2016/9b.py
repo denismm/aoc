@@ -6,6 +6,7 @@ filename = sys.argv[1]
 
 compression_re = re.compile(r"\((\d+)x(\d+)\)")
 
+
 def expand(input):
     out_length = 0
     while len(input) > 0:
@@ -26,6 +27,7 @@ def expand(input):
             out_length += len(input)
             input = ""
     return out_length
+
 
 with open(filename, "r") as f:
     full_length = 0
