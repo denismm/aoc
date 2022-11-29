@@ -49,12 +49,12 @@ with open(filename, "r") as f:
         print(f"bot {bot} comparing {inventory}")
         for (chip, target) in zip(inventory, bot_rules[bot]):
             (type, id) = target
-            if type == 'bot':
+            if type == "bot":
                 print(f"bot {id} got chip {chip}")
                 bot_inventory[id].append(chip)
-            elif type == 'output':
+            elif type == "output":
                 if id in outputs:
-                    raise ValueError (f"Overflowing output {output}")
+                    raise ValueError(f"Overflowing output {output}")
                 print(f"output {id} got chip {chip}")
                 outputs[id] = chip
             else:
@@ -62,7 +62,7 @@ with open(filename, "r") as f:
         bot_inventory[bot] = []
 
     while True:
-        acting_bots = [b for b,i in bot_inventory.items() if len(i) > 1]
+        acting_bots = [b for b, i in bot_inventory.items() if len(i) > 1]
         if len(acting_bots) == 0:
             break
         for bot in acting_bots:
