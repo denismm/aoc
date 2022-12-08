@@ -4,8 +4,7 @@ import re
 from typing import Pattern
 
 crate_pattern: Pattern[str] = re.compile(r"\[(.)\]\s")
-instruction_pattern: Pattern[str] = re.compile(
-    r"move (\d+) from (\d+) to (\d+)")
+instruction_pattern: Pattern[str] = re.compile(r"move (\d+) from (\d+) to (\d+)")
 
 filename = sys.argv[1]
 with open(filename, "r") as f:
@@ -14,16 +13,14 @@ with open(filename, "r") as f:
     for line in f:
         if mode == "stacks":
             if line.startswith(" 1 "):
-                expected_base = " ".join([f" {i + 1} "
-                    for i in range(len(stacks))])
+                expected_base = " ".join([f" {i + 1} " for i in range(len(stacks))])
                 if line.startswith(expected_base):
                     stacks = [list(reversed(x)) for x in stacks]
                     mode = "blank"
                     continue
                 else:
                     raise ValueError(
-                        "wrong base,"
-                        f" {line.rstrip()} instead of {expected_base}"
+                        "wrong base," f" {line.rstrip()} instead of {expected_base}"
                     )
             columns = len(line) // 4
             for i in range(columns):
