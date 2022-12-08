@@ -1,1 +1,2 @@
-mypy --strict *.py
+mypy --strict $@
+flake8 $@
