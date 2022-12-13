@@ -67,6 +67,17 @@ def print_history(history):
         print(f"step {steps}")
         print_state(elevator, state)
 
+def simplify_state(state):
+    mapping = {}
+    new_element = 0
+    for floor in state:
+        for item in floor:
+            if item[0] not in mapping:
+                mapping[item[0]] = new_element
+                new_element += 1
+    new_state = [ { (mapping[item[0]], item[1]) for item in floor} for floor in state ]
+    return new_state
+
 def print_state(elevator, state):
     print(f"elevator is {elevator}")
     for i, floor in enumerate(state):
@@ -76,6 +87,7 @@ def freeze(elevator, state):
     return (elevator, tuple([frozenset(x) for x in state]))
 
 # find shortest path
+first_state = simplify_state(first_state)
 queue = collections.deque([(0, 0, first_state, [])])
 seen = set([freeze(0, first_state)])
 current_round = -1
@@ -97,6 +109,7 @@ while (queue):
             for item in basket:
                 new_state[elevator].remove(item)
                 new_state[floor].add(item)
+            new_state = simplify_state(new_state)
             frozen = freeze(floor, new_state)
             if frozen in seen:
                 continue
