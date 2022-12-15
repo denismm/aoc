@@ -25,8 +25,8 @@ min_extents = [ min([min([position[c] for position in rock_line])
 
 min_extents[1] = 0
 width = 1 + max_extents[0] - min_extents[0]
-height = 1 + max_extents[1] - min_extents[1]
-grid: list[list[str]] = [ ['.'] * height for _ in range(width)]
+depth = 1 + max_extents[1] - min_extents[1]
+grid: list[list[str]] = [ ['.'] * depth for _ in range(width)]
 
 def transform_point(point: Position) -> Position:
     return tuple( [ a - b for a, b in zip(point, min_extents)] )
