@@ -6,6 +6,8 @@ filename = sys.argv[1]
 with open(filename, "r") as f:
     instructions: list[str] = [line.rstrip() for line in f]
 registers: dict[str, int] = {c: 0 for c in 'abcd'}
+# special case for b
+registers['c'] = 1
 ip = 0
 
 
