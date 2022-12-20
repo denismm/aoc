@@ -21,7 +21,7 @@ def is_open(position: Position) -> bool:
             # print(value)
             top_bit = math.ceil(math.log(value, 2)) + 1
             for i in range(top_bit):
-                if value & (2 ** i):
+                if value & 2 ** i:
                     open = not open
         maze_cache[position] = open
     return maze_cache[position]
@@ -30,11 +30,9 @@ def is_open(position: Position) -> bool:
 
 seen: set[Position] = set()
 
-max_x = 0
-max_y = 0
 def print_maze() -> None:
-    for row in range(max_y + 2):
-        for column in range(max_x + 2):
+    for row in range(10):
+        for column in range(10):
             if (column, row) in seen:
                 if is_open((column, row)):
                     print("O", end="")
@@ -50,22 +48,24 @@ State = tuple[Position, int]
 
 directions = ( (0, 1), (1, 0), (0, -1), (-1, 0))
 
-frontier: set[State] = { (start, 0) }
-distance = 0
+queue: collections.deque[State] = collections.deque()
+queue.append( (start, 0) )
 seen.add(start)
 
-while distance <= 50:
-    print(f"frontier {distance}: {len(frontier)} locations, {len(seen)} total")
-    next_frontier: set[State] = set()
-    for this_state in frontier:
-        position, _ = this_state
-        max_x = max(position[0], max_x)
-        max_y = max(position[1], max_y)
-        for dir in directions:
-            new_position = tuple([c + d for c, d in zip(position, dir)])
-            if new_position not in seen and is_open(new_position):
-                seen.add(new_position)
-                next_frontier.add( (new_position, distance + 1) )
-    distance += 1
-    frontier = next_frontier
-print_maze()
+current_dist = 0
+while len(queue):
+    this_state = queue.popleft()
+    position, distance = this_state
+    if distance > current_dist:
+        current_dist = distance
+        print(len(seen), this_state)
+    if position == destination:
+        final_distance = distance
+        break
+    for dir in directions:
+        new_position = tuple([c + d for c, d in zip(position, dir)])
+        if new_position not in seen and is_open(new_position):
+            seen.add(new_position)
+            queue.append( (new_position, distance + 1) )
+
+print(final_distance)
