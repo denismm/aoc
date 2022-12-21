@@ -2,7 +2,6 @@
 import sys
 
 ROCK_LIMIT = 2022
-# ROCK_LIMIT = 1_000_000_000_000
 # remember that the first entry in the array is the _bottom_
 BASE_ROCKS: list[bytes] = [
     bytes([15]),        # -
@@ -41,7 +40,6 @@ tick = 0
 current_rock: list[bytes] = []
 elevation = 0
 position = 0
-loop_heights: list[int] = []
 
 def summon_rock() -> None:
     global current_rock
@@ -85,17 +83,6 @@ def stop_rock() -> None:
     rock_count += 1
     while chamber[-1] == 0:
         chamber.pop()
-    if rock_count % len(rocks) == 0:
-        if loop_heights == []:
-            loop_heights.append(len(chamber))
-        else:
-            loop_heights.append(len(chamber) - loop_heights[-1])
-    if len(loop_heights) > 1000000:
-        for i in range(len(loop_heights) // 2):
-            if loop_heights[-i:] == loop_heights[-2 * i:-i]:
-                print(f"{i}-length repeton")
-                exit(0)
-        exit(0)
 
 def drop_rock() -> None:
     global elevation
