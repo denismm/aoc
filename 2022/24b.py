@@ -52,6 +52,7 @@ for wind, starts in wind_starts.items():
     winds[wind] = options
 
 full_loop = math.lcm(*maxes)
+print(f"full loop is {full_loop}")
 
 winds_for_tick: list[set[Position]] = [
     functools.reduce(lambda a, b: a | b,
