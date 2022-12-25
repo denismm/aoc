@@ -5,8 +5,8 @@ import math
 import copy
 from typing import NamedTuple, Optional
 
-# TIME_LIMIT = 32
-TIME_LIMIT = 24
+TIME_LIMIT = 32
+# TIME_LIMIT = 24
 # BLUEPRINT_LIMIT = 3
 BLUEPRINT_LIMIT = 3
 
@@ -35,6 +35,14 @@ Bots = list[int]
 Cost = list[list[int]]
 State = NamedTuple( 'State', [
     ('stock', Stock), ('bots', Bots), ('time', int), ('route', list[int])])
+
+useless_by_round: dict[int, set[int]] = {
+    0: { 0, 1, 2, 3 },
+    1: { 0, 1, 2, 3 },
+    2: { 0, 1, 2 },
+    3: { 1 },
+}
+
 def evaluate_blueprint(blueprint: Blueprint) -> int:
     # blueprint_num = blueprint[0]
     costs: Cost = [ [0] * 3 for _ in range(4)]
@@ -47,6 +55,8 @@ def evaluate_blueprint(blueprint: Blueprint) -> int:
 
     costs[3][0] = blueprint[5]
     costs[3][2] = blueprint[6]
+
+    bot_limits = [ max(r_costs) for r_costs in zip(*costs)]
 
     start_stock = [0] * 4
     start_bots = [1, 0, 0, 0]
@@ -67,7 +77,19 @@ def evaluate_blueprint(blueprint: Blueprint) -> int:
             best_score = end_score
             best_route = state.route
             # print(f"new best score: {best_score} ({state})")
-        for next_bot in range(4):
+        # trimming from SvenWoltmann on reddit
+        triangular_geodes = ((time_left) * (time_left - 1)) // 2
+        if end_score + triangular_geodes < best_score:
+            # print(f"discarding {state.route}, can't catch best score")
+            continue
+        useless: set[int] = useless_by_round.get(time_left, set())
+        for next_bot in reversed(range(4)):
+            if next_bot in useless:
+                continue
+            # trimming from PendragonDaGreat on reddit
+            # don't build more bots than you can use
+            if next_bot < 3 and state.bots[next_bot] >= bot_limits[next_bot]:
+                continue
             bot_cost = costs[next_bot]
             # print(f"bot cost for {next_bot} is {bot_cost}")
             time_needed: Optional[int] = 0
@@ -99,6 +121,10 @@ def evaluate_blueprint(blueprint: Blueprint) -> int:
                 for r, r_income in enumerate(new_bots):
                     new_stock[r] += r_income
                 new_time += 1
+                for r, r_max_cost in enumerate(bot_limits):
+                    # if we have more than we can ever use, drop down to that
+                    max_cost = r_max_cost * (TIME_LIMIT - new_time)
+                    new_stock[r] = min(new_stock[r], max_cost)
                 new_bots[next_bot] += 1
                 new_state = State(new_stock, new_bots, new_time, state.route + [next_bot])
                 # print(f"=adding {new_state.route}")
