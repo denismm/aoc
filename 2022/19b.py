@@ -5,7 +5,10 @@ import math
 import copy
 from typing import NamedTuple, Optional
 
-TIME_LIMIT = 32
+# TIME_LIMIT = 32
+TIME_LIMIT = 24
+# BLUEPRINT_LIMIT = 3
+BLUEPRINT_LIMIT = 3
 
 blueprint_re = re.compile(r'Blueprint (\d+):\s*'
   r'Each ore robot costs (\d+) ore.\s*'
@@ -36,9 +39,12 @@ def evaluate_blueprint(blueprint: Blueprint) -> int:
     # blueprint_num = blueprint[0]
     costs: Cost = [ [0] * 3 for _ in range(4)]
     costs[0][0] = blueprint[1]
+
     costs[1][0] = blueprint[2]
+
     costs[2][0] = blueprint[3]
     costs[2][1] = blueprint[4]
+
     costs[3][0] = blueprint[5]
     costs[3][2] = blueprint[6]
 
@@ -48,6 +54,7 @@ def evaluate_blueprint(blueprint: Blueprint) -> int:
     start_state = State(start_stock, start_bots, start_time, [])
 
     best_score = 0
+    best_route = []
     stack = [start_state]
     print(costs)
     while stack:
@@ -55,9 +62,11 @@ def evaluate_blueprint(blueprint: Blueprint) -> int:
         # print(f"===handling state {state.bots}")
         time_left = TIME_LIMIT - state.time
         end_score = state.stock[3] + state.bots[3] * time_left
+        # print(f"route: {''.join([str(x) for x in state.route])} stock: {state.stock} bots: {state.bots} time: {state.time}")
         if end_score > best_score:
             best_score = end_score
-            print(f"new best score: {best_score} ({state})")
+            best_route = state.route
+            # print(f"new best score: {best_score} ({state})")
         for next_bot in range(4):
             bot_cost = costs[next_bot]
             # print(f"bot cost for {next_bot} is {bot_cost}")
@@ -94,10 +103,11 @@ def evaluate_blueprint(blueprint: Blueprint) -> int:
                 new_state = State(new_stock, new_bots, new_time, state.route + [next_bot])
                 # print(f"=adding {new_state.route}")
                 stack.append(new_state)
+    print(best_route)
     return best_score
 
 full_score = 1
-for blueprint in blueprints[:3]:
+for blueprint in blueprints[:BLUEPRINT_LIMIT]:
     score = evaluate_blueprint(blueprint)
     print(f"blueprint {blueprint[0]} of {len(blueprints)}: {score}")
     full_score *= score
