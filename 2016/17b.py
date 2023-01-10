@@ -40,6 +40,6 @@ while len(queue):
             new_position = add_pos(position, directions[dir])
             new_path = path + dir
             if new_position == destination:
-                print(len(new_path))
+                print(">>>", len(new_path))
             elif 0 <= new_position[0] < 4 and 0 <= new_position[1] < 4:
                 queue.append( (new_position, new_path))
