@@ -2,12 +2,13 @@
 import sys
 
 filename = sys.argv[1]
+egg_count = sys.argv[2]
 
 with open(filename, "r") as f:
     instructions: list[list[str]] = [line.rstrip().split() for line in f]
 registers: dict[str, int] = {c: 0 for c in 'abcd'}
 # set up eggs
-registers['a'] = 7
+registers['a'] = int(egg_count)
 ip = 0
 
 
