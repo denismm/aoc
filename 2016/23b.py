@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import sys
 
+from typing import Union, Literal
+
 filename = sys.argv[1]
 egg_count = sys.argv[2]
 
@@ -27,55 +29,101 @@ inst_mapping = {
     'cpy': 'jnz',
 }
 
-def is_addition(pointer):
-    inst_chain = commands[pointer:]
-    if inst_chain[0:3] == ['inc', 'dec', 'jnz']:
-        next_args = arguments[ip:ip+3]
-        if next_args[1][0] == next_args[2][0] and next_args[2][1] == '-2':
-            return True
+def print_section(pointer: int, length: int) -> None:
+    print(f"===section {pointer} for {length}===")
+    for i in range(pointer, pointer + length):
+        print(f"{i}: {commands[i]} {arguments[i]}")
 
-def is_multiplication(pointer):
+def is_addition(pointer: int) -> Union[Literal[False], int]:
+    inst_chain = commands[pointer:]
+
+    def check_section(dec_line: int) -> Union[Literal[False], int]:
+        # print(f"found addition inst chain at {pointer}")
+        # print_section(pointer, 3)
+        next_args = arguments[pointer:pointer+3]
+        # print(next_args)
+        if next_args[dec_line][0] != next_args[2][0]:
+            print(f"1 {next_args[dec_line][0]} != 2 {next_args[2][0]}")
+            return False
+        if next_args[2][1] != '-2':
+            print(f"jump {next_args[2][1]} != -2")
+            return False
+        return dec_line
+    if inst_chain[0:3] == ['inc', 'dec', 'jnz']:
+        return check_section(1)
+    elif inst_chain[0:3] == ['dec', 'inc', 'jnz']:
+        return check_section(0)
+    return False
+
+
+def is_multiplication(pointer: int) -> Union[Literal[False], int]:
     inst_chain = commands[pointer:]
     if inst_chain[0:6] == ['cpy', 'inc', 'dec', 'jnz', 'dec', 'jnz']:
-        if is_addition(pointer + 1):
-            next_args = arguments[ip:ip+6]
-            if next_args[4][0] == next_args[5][0] and next_args[5][1] == '-5' and next_args[0][1] == next_args[2][0]:
-                return True
+        # print(f"found multiplication inst chain at {pointer}")
+        # print_section(pointer, 6)
+        addition_dec_line = is_addition(pointer + 1)
+        if addition_dec_line is False:
+            print("subcommand is not addition")
+            return False
+        dec_line = addition_dec_line + 1
+        next_args = arguments[pointer:pointer+6]
+        if next_args[4][0] != next_args[5][0]:
+            print(f"4 {next_args[4][0]} != 5 {next_args[5][0]}")
+            return False
+        if next_args[5][1] != '-5':
+            print(f"final jnz {next_args[5][1]} != -5")
+            return False
+        if next_args[0][1] != next_args[dec_line][0]:
+            print(f"counter mismatch: {next_args[0][1]} != {next_args[dec_line][0]}")
+            return False
+        return dec_line
+    return False
 
 
 def parse_line() -> None:
     global ip
-    if is_multiplication(ip):
+    # print(f"parsing {ip} {commands[ip]} {arguments[ip]} {[registers[x] for x in 'abcd']}")
+    if (dec_line := is_multiplication(ip)):
         next_args = arguments[ip:ip+6]
-        # accum += a * b
-        accum = next_args[1][0]
-        a, b = next_args[2][0], next_args[0][0]
-        registers[accum] += registers[a] * registers[b]
-        registers[a] = 0
+        # accum += a * b, zero b and buffer
+        a, accum, buffer, b = [next_args[i][0] for i in [0, 3 - dec_line, dec_line, 4]]
+        print(f"{ip}: {accum} += {a} * {b} ({registers[accum]} += {get_value(a)} * {registers[b]})")
+        registers[accum] += get_value(a) * registers[b]
         registers[b] = 0
+        registers[buffer] = 0
         ip += 6
         return
-    if is_addition(ip):
+    if (dec_line := is_addition(ip)) is not False:
         next_args = arguments[ip:ip+3]
-        registers[next_args[0][0]] += registers[next_args[1][0]]
-        registers[next_args[1][0]] = 0
+        arg_order = [1 - dec_line, dec_line]
+        # a += b
+        a, b = [next_args[i][0] for i in arg_order]
+        print(f"{ip}: {a} += {b} ({registers[a]} += { registers[b]})")
+        registers[a] += registers[b]
+        registers[b] = 0
         ip += 3
         return
     inst = commands[ip]
     args = arguments[ip]
     if inst == 'cpy':
         source: int = get_value(args[0])
+        print(f"{ip}: {args[1]} = {args[0]} ({source})")
         registers[args[1]] = source
     elif inst == 'inc':
-        registers[args[0]] += 1
+        a = args[0]
+        print(f"{ip}: {a} up ({registers[a]} up)")
+        registers[a] += 1
     elif inst == 'dec':
-        registers[args[0]] -= 1
+        a = args[0]
+        print(f"{ip}: {a} dn ({registers[a]} dn)")
+        registers[a] -= 1
     elif inst == 'jnz':
         test: int = get_value(args[0])
         if test != 0:
             jump: int = get_value(args[1])
+            print(f"jump by {jump}")
             ip += jump
-            print_next_section()
+            # print_next_section()
             return
     elif inst == 'tgl':
         location = get_value(args[0]) + ip
@@ -89,11 +137,13 @@ def parse_line() -> None:
     ip += 1
 
 sections = set()
-def print_next_section():
+def print_next_section() -> None:
     i = ip
+    print(f"start section at {i}")
     limit = -1
     section_text = []
     while i < len(instructions):
+        print(i)
         if commands[i] == 'tgl':
             break
         if commands[i] == 'jnz':
