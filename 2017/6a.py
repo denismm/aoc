@@ -14,11 +14,15 @@ while True:
     length = max(state)
     entry = state.index(length)
     state[entry] = 0
+
+    # spread around
     i = (entry + 1) % blocks
     while length:
         state[i] += 1
         length -= 1
         i = (i + 1) % blocks
+
+    # check for repeats
     new_tuple = tuple(state)
     if new_tuple in permutations:
         print(len(permutations))
