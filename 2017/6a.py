@@ -6,9 +6,10 @@ filename = sys.argv[1]
 with open(filename, 'r') as f:
     state = [int(x) for x in f.read().rstrip().split()]
 
-permutations = set([tuple(state)])
+permutations = {tuple(state): 0}
 blocks = len(state)
 
+step = 1
 while True:
     # take out top entry
     length = max(state)
@@ -25,7 +26,9 @@ while True:
     # check for repeats
     new_tuple = tuple(state)
     if new_tuple in permutations:
-        print(len(permutations))
+        print("full length:", step)
+        print("loop length:", step - permutations[new_tuple])
         exit(0)
     else:
-        permutations.add(new_tuple)
+        permutations[new_tuple] = step
+        step += 1
