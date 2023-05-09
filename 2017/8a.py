@@ -20,7 +20,15 @@ def get_comparison_func(comparison: str) -> Callable[[int, int], bool]:
 
 dir_direction = {'inc': 1, 'dec': -1}
 
+def get_top() -> tuple[str, int]:
+    top_value = max(registers.values())
+    top_register = [k for k,v in registers.items() if v == top_value][0]
+    return (top_register, top_value)
+
 with open(filename, 'r') as f:
+    ever_top_reg = ''
+    ever_top_value = 0  # they're all currently 0
+
     for line in f:
         (target, dir, amtstr, _, compreg, comparison, conststr) = line.split()
         amount = int(amtstr)
@@ -31,6 +39,10 @@ with open(filename, 'r') as f:
         func = get_comparison_func(comparison)
         if func(comparison_value, constant):
             registers[target] += amount * dir_direction[dir]
-    top_value = max(registers.values())
-    top_register = [k for k,v in registers.items() if v == top_value][0]
-    print(f"{top_register}: {top_value}")
+        current_top_reg, current_top_value = get_top()
+        if current_top_value > ever_top_value:
+            ever_top_value, ever_top_reg = current_top_value, current_top_reg
+
+    top_register, top_value = get_top()
+    print(f"Ever: {ever_top_reg}: {ever_top_value}")
+    print(f"Now: {top_register}: {top_value}")
