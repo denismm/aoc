@@ -17,11 +17,7 @@ def analyze_line(line: str) -> int:
     # group or garbage
     # cancel or not
     for character in line:
-        if cancel:
-            cancel = False
-        elif character == '!':
-            cancel = True
-        elif mode == ScanMode.GROUP:
+        if mode == ScanMode.GROUP:
             if character == '<':
                 mode = ScanMode.GARBAGE
             elif character == '{':
@@ -34,12 +30,14 @@ def analyze_line(line: str) -> int:
             else:
                 raise ValueError(f"didn't expect {character} in group")
         else:   # GARBAGE mode
-            if character == '>':
+            if cancel:
+                cancel = False
+            elif character == '!':
+                cancel = True
+            elif character == '>':
                 mode = ScanMode.GROUP
     if depth != 0:
         raise ValueError(f"group not closed: depth is {depth}")
-    if cancel:
-        raise ValueError("mid-cancel at end")
     return score
 
 with open(filename, 'r') as f:
