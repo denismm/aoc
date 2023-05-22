@@ -6,11 +6,12 @@ filename = sys.argv[1]
 
 ScanMode = Enum('ScanMode', ['GROUP', 'GARBAGE'])
 
-def analyze_line(line: str) -> int:
+def analyze_line(line: str) -> tuple[int, int]:
     score = 0
     depth = 0
     mode = ScanMode.GROUP
     cancel = False
+    garbage = 0
     # open group: add to depth
     # close group: add depth to score, decrease depth
     # modes:
@@ -36,11 +37,13 @@ def analyze_line(line: str) -> int:
                 cancel = True
             elif character == '>':
                 mode = ScanMode.GROUP
+            else:
+                garbage += 1
     if depth != 0:
         raise ValueError(f"group not closed: depth is {depth}")
-    return score
+    return garbage, score
 
 with open(filename, 'r') as f:
     for line in f:
-        score = analyze_line(line.rstrip())
-        print(score)
+        garbage, score = analyze_line(line.rstrip())
+        print(f"score is {score}, garbage is {garbage}")
