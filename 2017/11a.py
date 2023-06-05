@@ -24,5 +24,5 @@ with open(filename, 'r') as f:
             location = add_direction(location, step_direction)
         (q, r) = location
         s: int = -q - r
-        distance = (abs(q) + abs(r) + abs(s)) // 2
+        distance = max([ abs(x) for x in [q, r, s]])
         print(distance)
