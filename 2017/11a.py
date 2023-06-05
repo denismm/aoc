@@ -2,6 +2,8 @@
 import sys
 from positions import Position, add_direction
 
+# directions and distance from https://www.redblobgames.com/grids/hexagons/
+
 filename = sys.argv[1]
 
 directions: dict[str, Position] = {
