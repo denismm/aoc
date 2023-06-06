@@ -11,14 +11,30 @@ with open(filename, 'r') as f:
         targets = target_string.split(', ')
         connections[int(start)] = [int(x) for x in targets]
 
+groups: set[frozenset[int]] = set()
 seen: set[int] = set()
-stack: list[int] = [0]
 
-while stack:
-    current = stack.pop()
-    seen.add(current)
-    for next in connections[current]:
-        if next not in seen:
-            stack.append(next)
+def find_group(source: int) -> set[int]:
+    stack: list[int] = [source]
+    group: set[int] = set()
+    while stack:
+        current = stack.pop()
+        seen.add(current)
+        group.add(current)
+        for next in connections[current]:
+            if next not in seen:
+                stack.append(next)
+    return group
 
-print(len(seen))
+zero_group = find_group(0)
+print(len(zero_group))
+groups.add(frozenset(zero_group))
+
+nodes = set(connections.keys()) - seen
+while nodes:
+    source_node = nodes.pop()
+    newgroup = find_group(source_node)
+    nodes -= newgroup
+    groups.add(frozenset(newgroup))
+
+print(len(groups))
