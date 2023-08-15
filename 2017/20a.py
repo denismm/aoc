@@ -40,11 +40,32 @@ def gone(particle: Particle) -> bool:
     return True
 
 arrangement: list[list[int]] = []
+all_distances: list[list[int]] = []
 for i in range(1000):
     tick()
-    distances = enumerate([manhattan(particle.p) for particle in particles])
-    sorted_distances = sorted(distances, key=lambda x: x[1])
+    distances = [manhattan(particle.p) for particle in particles]
+    all_distances.append(distances)
+    sorted_distances = sorted(enumerate(distances), key=lambda x: x[1])
     arrangement.append([x[0] for x in sorted_distances])
     # print(arrangement[-1][:5])
     if len(arrangement) > 3 and arrangement[-1] == arrangement[-2] == arrangement[-3]:
-        print(f"at step {i}, arrangement is {arrangement[-1][:5]}")
+        print(f"% at step {i}, arrangement is {arrangement[-1][:10]}")
+        break
+
+def ps_list(data: list[int]) -> str:
+    return "[" +  ' '.join([str(x) for x in data]) +  "]"
+
+exit(0)
+print("[")
+
+# ps output of arrangement
+# for a in arrangement:
+    # print(ps_list([a.index(x) for x in range(len(a))]))
+
+# ps output of distances
+for a in all_distances:
+    print(ps_list(a))
+
+print("]")
+
+

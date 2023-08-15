@@ -1,0 +1,27 @@
+%!
+(dmmlib/base.ps) run
+
+/arrangements 
+(20.arrangements) run
+def
+
+/p_n arrangements 0 get length def
+
+72 softscale
+0.25 dup translate
+
+8 p_n div 10.5 arrangements length div scale
+0.5 setlinewidth
+
+1 1 arrangements length 1 sub { /i arg
+    0 1 p_n 1 sub { /j arg
+        j p_n div 360 mul setsinebowcolor
+        arrangements i 1 sub get j get i 1 sub goto
+        arrangements i get j get i goto
+        stroke
+    } for
+
+} for
+
+showpage
+
