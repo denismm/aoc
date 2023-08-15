@@ -21,6 +21,7 @@ if start == (-1, -1):
 location: Position = start
 direction: Direction = (0, 1)
 route: list[str] = []
+steps: int = 0
 
 while True:
     # deal with current location
@@ -47,5 +48,7 @@ while True:
         raise ValueError(f"unexpected pipe {current_pipe}")
     # take step
     location = add_direction(location, direction)
+    steps += 1
 
 print("".join(route))
+print(steps)
