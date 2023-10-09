@@ -1,0 +1,34 @@
+set b 79
+set c b # c is 79
+jnz a 2
+jnz 1 5
+mul b 100
+sub b -100000   # b = 100b + 10000
+set c b
+sub c -17000    # c = b + 17000 # b = 107900 c = 124900
+set f 1         # BBB
+set d 2         # outer loop : f is 1, d is 2
+
+set e 2         # AAA
+
+set g d         # GGG
+mul g e
+sub g b         # g = (de) - b
+jnz g 2         # if g is 0, f is 0
+set f 0
+sub e -1        # increment e
+set g e
+sub g b         # 
+jnz g -8        # back to GGG   if e != b
+sub d -1        # increment d
+set g d
+sub g b
+jnz g -13       # back to AAA   if d != b
+jnz f 2         # don't inc h if f is 0
+sub h -1        # increment h!
+set g b
+sub g c
+jnz g 2         # skip exit if b != c
+jnz 1 3         # EXIT
+sub b -17       # b += 17
+jnz 1 -23       # back to BBB

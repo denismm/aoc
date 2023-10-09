@@ -1,0 +1,28 @@
+b = 107900
+c = 124900
+d = 0
+e = 0
+f = 0
+h = 0
+while b != c:   # BBB loop      1000 loops
+    f = 1
+    d = 2
+    # f is 0 if b is not prime?
+    while d != b:   # AAA loop
+        e = 2
+        while e != b:       # GGG loop
+            if d * e == b:
+                print(f"{e} * {d} == {b}")
+                f = 0
+                break
+            e += 1
+        if f == 0:
+            break
+        d += 1
+    if f != 0:
+        print(f"incrementing for {b}")
+        h += 1
+    else:
+        print(f"not incrementing for {b}")
+    b += 17
+print(h)
