@@ -1,0 +1,256 @@
+%!
+(dmmlib/base.ps) run
+
+/taxicircle { /r arg /y arg /x arg
+    gsave
+        x y translate
+        4 {
+            0 distance 0.5 add goto
+        } circrepeat
+        closepath 
+        0.5 grayfill 
+        stroke
+    grestore
+} def
+
+
+/15a { /special_row arg /filename arg
+
+    1 -1 scale
+    /oldmatrix matrix currentmatrix def
+    special_row recip softscale
+    /limit special_row 2 mul def
+    /sensorfile filename (r) file def
+
+    /buffer 500 string def
+
+    /Helvetica-Bold findfont setfont
+    /drawlabel { /label arg /y arg /x arg
+        gsave
+            x y translate
+            1 -1 scale
+            label centershow
+        grestore
+    } def
+
+    /minx 0 def
+    /maxx 0 def
+    /filled_areas [] def
+    /baseline_beacons 1 dict def
+    /add_area { /stop arg /start arg
+        filled_areas length 0 eq {
+            /filled_areas [start stop] def
+        } {
+            /new_filled filled_areas length 2 add array def
+            /fai 0 def
+            % everything before start
+            {
+                fai filled_areas length ge { exit } if
+                filled_areas fai get start ge { exit } if
+                new_filled fai filled_areas fai get put
+                /fai fai 1 add def
+            } loop
+            /nfi fai def
+            fai 2 mod 0 eq {
+                % even, add an entrance
+                new_filled nfi start put
+                /nfi nfi 1 add def
+            } if
+            % skip through everything inside
+            {
+                fai filled_areas length ge { exit } if
+                filled_areas fai get stop ge { exit } if
+                /fai fai 1 add def
+            } loop
+            fai 2 mod 0 eq {
+                % even, add an exit
+                new_filled nfi stop put
+                /nfi nfi 1 add def
+            } if
+            filled_areas length fai sub { 
+                new_filled nfi filled_areas fai get put
+                /fai fai 1 add def
+                /nfi nfi 1 add def
+            } repeat
+            nfi 2 mod 1 eq { die }
+            /new_filled new_filled 0 nfi getinterval def
+            /filled_areas new_filled def
+        } ifelse
+    } def
+
+    % pull in data, do appropriate per-line calculations
+    /parse_line { /input_line arg
+            % consume line, putting useful data in variables
+            line (Sensor at x=) search { pop pop /line arg } { die } ifelse
+            line (, y=) search { cvi /sx arg pop /line arg } { die } ifelse
+            line (: closest beacon is at x=) search { cvi /sy arg pop /line arg } { die } ifelse
+            line (, y=) search { cvi /bx arg pop cvi /by arg } { die } ifelse
+
+            /distance sx bx sub abs sy by sub abs add def
+            /spread distance sy special_row sub abs sub def
+            spread 0 ge {
+                sx spread sub sx spread add 1 add add_area
+            } if
+            by special_row eq {
+                baseline_beacons bx true put
+            } if
+            sx minx lt { /minx sx def } if
+            bx minx lt { /minx bx def } if
+            sx maxx gt { /maxx sx def } if
+            bx maxx gt { /maxx bx def } if
+            [ sx sy bx by distance ]
+    } def
+
+    /analyze_edges {
+        /line_count sensor_data length def
+        /b_for_dir <<
+            (ne) line_count array
+            (se) line_count array
+            (nw) line_count array
+            (sw) line_count array
+        >> def
+        /b_for_line { /m arg /y arg /x arg
+            x y m mul add
+        } def
+        /i 0 def
+        sensor_data { /v arg /k arg
+            v aload pop /distance arg pop pop /sy arg /sx arg
+            /front sx distance add def
+            /back sx distance sub def
+            b_for_dir (se) get i front sy -1 b_for_line put
+            b_for_dir (ne) get i front sy 1 b_for_line put
+            b_for_dir (sw) get i back sy 1 b_for_line put
+            b_for_dir (nw) get i back sy -1 b_for_line put
+            /i i 1 add def
+        } forall
+        % find ziagonal gaps
+        /z_gaps line_count dict def
+        b_for_dir (se) get { /b_se arg
+            b_for_dir (nw) get { /b_nw arg
+                b_nw b_se sub 2 eq {
+                    /center b_se 1 add def
+                    z_gaps center true put
+                } if
+            } forall
+        } forall
+        % find niagonal gaps
+        /n_gaps line_count dict def
+        b_for_dir (ne) get { /b_ne arg
+            b_for_dir (sw) get { /b_sw arg
+                b_sw b_ne sub 2 eq {
+                    /center b_ne 1 add def
+                    n_gaps center true put
+                } if
+            } forall
+        } forall
+        z_gaps { pop /z arg
+            n_gaps { pop /n arg
+                % find x and y
+                n z add 2 mod 0 eq {
+                    /y n z sub 2 div cvi def
+                    /x y z add def
+                    % check bounds
+                    0 x le x limit le and
+                    0 y le and y limit le and {
+                        /blocked false def
+                        sensor_data { /v arg /k arg
+                            v aload pop /distance arg pop pop /sy arg /sx arg
+                            /actual_dist x sx sub abs y sy sub abs add def
+                            actual_dist distance le {
+                                /blocked true def
+                            } if
+                        } forall
+                        blocked not {
+                            /distress [x y] def
+                        } if
+                    } if
+                } if
+            } forall
+        } forall
+        distress
+    } def
+
+    /draw_cave {
+        gsave
+            0 setgray
+            sensor_data {
+                aload pop /distance arg /by arg /bx arg /sy arg /sx arg pop
+                sx sy distance taxicircle
+                sx sy (S) drawlabel
+                bx by (B) drawlabel
+                sx sy goto bx by goto stroke
+            } forall
+            gsave
+                maxx minx sub 1000 lt {
+                    minx 5 sub special_row 5 sub maxx 5 add special_row 5 add 1 dotgrid
+                } if
+            grestore
+        grestore
+    } def
+    gsave
+
+        /sensor_data 10 dict def
+        /i 0 def
+        {
+            sensorfile buffer readline
+            not {exit} if
+            /line arg
+            line parse_line /data_entry arg
+            sensor_data [data_entry 0 get data_entry 1 get] data_entry put
+        } loop
+        draw_cave
+        gsave
+            %15a answer
+            1 0 0 setrgbcolor
+            /total_filled 0 def
+            0 2 filled_areas length 2 sub { /i arg
+                /start filled_areas i get def
+                /stop filled_areas i 1 add get def
+                start 0.5 sub special_row goto stop 0.5 sub special_row goto stroke
+                /total_filled total_filled stop start sub add def
+            } for
+            /total_filled total_filled baseline_beacons length sub def
+            /Helvetica-Bold findfont special_row 5 div scalefont setfont
+            0 0 total_filled 10 string cvs drawlabel
+            % 15b answer
+            0 0 limit dup box stroke
+            analyze_edges aload pop /dy arg /dx arg
+            dx 2.5 sub dy 2.5 sub dx 2.5 add dy 2.5 add box stroke
+            dx dy 2.5 add goto
+            oldmatrix setmatrix
+            72 recip setlinewidth
+            1 2.75 goto
+            stroke
+            1 3.25 translate
+            special_row 1000 lt {
+                -0.5 -0.5 0.5 0.5 box 
+                gsave
+                    clip newpath
+                    5 recip softscale
+                    dx neg dy neg translate
+                    draw_cave
+                    dx dy translate
+                    2 recip softscale
+                grestore
+                stroke
+                /answer dx 4000000 mul dy add def
+                10 recip softscale
+                0 2.5 answer 20 string cvs drawlabel
+            } {
+                /answer dx 4000000 mul dy add def
+                /Helvetica-Bold findfont 0.25 scalefont setfont
+                0 -0.25 answer 20 string cvs drawlabel
+            } ifelse
+        grestore
+    grestore
+} def
+
+%%EndProlog
+
+72 softscale
+2.25 8 translate
+2 softscale
+(15.input.txt) 2000000 15a
+% (15.test) 10 15a 
+
+showpage

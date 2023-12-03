@@ -1,0 +1,46 @@
+26a27,29
+> max_extents[1] += 1
+> min_extents[0] -= 1
+> max_extents[0] += 1
+39d41
+< 
+58a61,62
+> print_grid(grid)
+> 
+64,67c68,74
+< def get_grid(position: Position) -> str:
+<     try:
+<         return grid[position[0]][position[1]]
+<     except IndexError:
+---
+> piles: list[int] = [0, 0]
+> 
+> def handle_pile(pile_index: int, y: int) -> str:
+>     if depth - piles[pile_index] < y:
+>         return 'o'
+>     else:
+>         piles[pile_index] += 1
+69a77,86
+> def get_grid(position: Position) -> str:
+>     x, y = position
+>     if y >= depth:
+>         return '#'
+>     if x < 0:
+>         return handle_pile(0, y)
+>     if x >= width:
+>         return handle_pile(1, y)
+>     return grid[x][y]
+> 
+84c101
+< while True:
+---
+> while get_grid(source) == '.':
+89c106
+<         break
+---
+>         pass
+91a109,110
+> for pile in piles:
+>     dropped_sand += (pile * (pile - 1)) // 2
+92a112
+> print(piles)
