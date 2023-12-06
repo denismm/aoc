@@ -1,0 +1,8 @@
+win if x * (t-x) > d
+
+xt - xx > d
+-xx + xt - d > 0
+
+zeros = (t +/- sqrt(t^2 - 4d)) / -2
+489384 +/- sqrt(489384^2 - 4 * 261119210191063) / -2
+bah solve it in google spreadsheet
