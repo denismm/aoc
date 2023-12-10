@@ -8,3 +8,6 @@ zeta_directions: tuple[Direction, ...] = tuple( (x, y) for x in (-1, 0, 1) for y
 
 def add_direction(position: Position, dir: Direction) -> Position:
     return tuple([p + d for p, d in zip(position, dir)])
+
+def get_direction(source: Position, target: Position) -> Direction:
+    return tuple([t - s for s, t in zip(source, target)])
