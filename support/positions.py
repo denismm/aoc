@@ -11,3 +11,6 @@ def add_direction(position: Position, dir: Direction) -> Position:
 
 def get_direction(source: Position, target: Position) -> Direction:
     return tuple([t - s for s, t in zip(source, target)])
+
+def manhattan(source: Position, target: Position) -> int:
+    return sum([abs(s - t) for s, t in zip(source, target)])
