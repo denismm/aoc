@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 from itertools import zip_longest
+from functools import cache
 
 filename = sys.argv[1]
 if len(sys.argv) > 2:
@@ -10,10 +11,11 @@ else:
 
 total_counts = 0
 
+@cache
 def count_valids(
-        springs: list[str],
-        groups: list[int],
-        unknown_locs: list[int]) -> int:
+        springs: tuple[str, ...],
+        groups: tuple[int, ...],
+        unknown_locs: tuple[int, ...]) -> int:
     # print(f"cv:\t>{''.join(springs)}< {groups} {unknown_locs}")
     valid_count = 0
     position = unknown_locs[0]
@@ -78,14 +80,14 @@ def count_valids(
                 subtraction = seen_groups.pop()
 
             handled_groups = groups[:len(seen_groups)]
-            if handled_groups != seen_groups:
+            if handled_groups != tuple(seen_groups):
                 raise ValueError(f"{handled_groups=} != {seen_groups=}")
-            next_groups = groups[len(seen_groups):]
+            next_groups = list(groups[len(seen_groups):])
             # print(f"{next_groups=} {next_unknowns=} {subtraction=}")
             if subtraction:
                 next_groups[0] -= subtraction
 
-            valid_count += count_valids(next_springs, next_groups, next_unknowns)
+            valid_count += count_valids(tuple(next_springs), tuple(next_groups), tuple(next_unknowns))
     # print(f"returning {valid_count}")
     return valid_count
 
@@ -98,7 +100,7 @@ with open(filename, 'r') as f:
         springs = [' '] + list(unfolded_spring_info)
         groups = [int(s) for s in group_info.split(',')] * multiplier
         unknown_locs = [i for i, char in enumerate(springs) if char == '?']
-        valid_arrangements = count_valids(springs, groups, unknown_locs)
+        valid_arrangements = count_valids(tuple(springs), tuple(groups), tuple(unknown_locs))
         print(f"{i}: got {valid_arrangements}")
         total_counts += valid_arrangements
     print(total_counts)
