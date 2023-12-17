@@ -21,7 +21,7 @@ height = j + 1
 Step = NamedTuple('Step', [('location', Position), ('dir', Direction), ('substep', int)])
 QueueEntry = NamedTuple('QueueEntry', [('heat_loss', int), ('step', Step), ('path', tuple[Step, ...])])
 
-first_step = Step((0, 0), (1, 0), 0)
+first_step = Step((0, 0), (1, 0), 1)
 target: Position = (width - 1, height - 1)
 seen_steps: set[Step] = {first_step}
 
@@ -31,7 +31,7 @@ while (queue):
     # print([(e.heat_loss, e.step.location, e.step.dir, e.step.substep) for e in queue])
     entry = queue.get()
     step = entry.step
-    if step.location == target and step.substep >= 3:
+    if step.location == target and step.substep >= 4:
         print(f"smallest_loss: {entry.heat_loss}")
         if False:
             path_locs = [step.location for step in entry.path]
@@ -49,12 +49,12 @@ while (queue):
         if add_direction(direction, step.dir) == (0, 0):
             continue
         elif direction != step.dir:
-            if new_substep < 4:
+            if new_substep <= 4:
                 # invalid turn
                 continue
             # print(f"{entry.heat_loss} turning at {step.location} {new_substep}")
-            new_substep = 0
-        if new_substep >= 10:
+            new_substep = 1
+        if new_substep > 10:
             continue
         new_location = add_direction(step.location, direction)
         if new_location in grid:
