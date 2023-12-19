@@ -37,4 +37,33 @@ with open(filename, "r") as f:
                     rules.append(Rule("", "", 0, entry))
             workflows[name] = rules
 
-pprint(workflows)
+def compare(input: int, comparison: str, value: int) -> bool:
+    if comparison == '>':
+        return input > value
+    elif comparison == '=':
+        return input == value
+    elif comparison == '<':
+        return input < value
+    raise ValueError(f'bad comparison {comparison}')
+
+accepted: list[Item] = []
+end_state = { 'R', 'A' }
+for item in items:
+    state = 'in'
+    while state not in end_state:
+        new_state = ""
+        for rule in workflows[state]:
+            if rule.field == '':
+                new_state = rule.dest
+                break
+            else:
+                if compare(item[rule.field], rule.comparison, rule.value):
+                    new_state = rule.dest
+                    break
+        if new_state == "":
+            raise ValueError(f'no matching rule for {state}')
+        state = new_state
+    if state == 'A':
+        accepted.append(item)
+total = sum([sum(item.values()) for item in accepted])
+print(total)
