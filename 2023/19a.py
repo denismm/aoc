@@ -2,6 +2,8 @@
 import sys
 from typing import NamedTuple
 from pprint import pprint
+from copy import deepcopy
+from functools import reduce
 import re
 
 filename = sys.argv[1]
@@ -78,3 +80,44 @@ for item in items:
 total = sum([sum(item.values()) for item in accepted])
 print(total)
 
+# combos
+def set_compare(input_set: set[int], comparison: str, value: int) -> tuple[set[int], set[int]]:
+    passing_map: set[int] = set()
+    if comparison == '>':
+        passing_map = set(range(value + 1, 4001))
+    elif comparison == '=':
+        passing_map = {value}
+    elif comparison == '<':
+        passing_map = set(range(0, value))
+    else:
+        raise ValueError(f'bad comparison {comparison}')
+    return (input_set & passing_map, input_set - passing_map)
+
+
+all_combos: dict[str, set[int]] = { k: set(range(1, 4001)) for k in 'xmas'}
+def valid_combos_for_state(state: str, input: dict[str, set[int]]) -> int:
+    if state == 'R':
+        return 0
+    if state == 'A':
+        lengths = [len(s) for s in input.values()]
+        return reduce(lambda x, y: x*y, lengths)
+    input = deepcopy(input)
+    rules = workflows[state]
+    valid_total = 0
+    for rule in rules:
+        if rule.field == '':
+            valid_total += valid_combos_for_state(rule.dest, input)
+        else:
+            field_set = input[rule.field]
+            passing_set, failing_set = set_compare(field_set, rule.comparison, rule.value)
+            if passing_set:
+                passing_input = input
+                passing_input[rule.field] = passing_set
+                valid_total += valid_combos_for_state(rule.dest, passing_input)
+            if not failing_set:
+                break
+            # remainder goes to next rule
+            input[rule.field] = failing_set
+    return valid_total
+
+print(valid_combos_for_state('in', all_combos))
