@@ -46,6 +46,16 @@ def compare(input: int, comparison: str, value: int) -> bool:
         return input < value
     raise ValueError(f'bad comparison {comparison}')
 
+# drop silly rules
+for name, rules in workflows.items():
+    while len(rules) >= 2:
+        if rules[-1].field != "":
+            raise ValueError(f"bad default at {name}")
+        if rules[-2].dest == rules[-1].dest:
+            rules.pop(-2)
+        else:
+            break
+
 accepted: list[Item] = []
 end_state = { 'R', 'A' }
 for item in items:
@@ -67,3 +77,4 @@ for item in items:
         accepted.append(item)
 total = sum([sum(item.values()) for item in accepted])
 print(total)
+
