@@ -32,6 +32,7 @@ if False:
     for j in range(-farthest, farthest):
         for i in range(-farthest, farthest):
             print(grid.get((i, j), ' '), end="")
+        print()
 
 # fill outside
 outside: set[Position] = set()

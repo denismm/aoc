@@ -1,0 +1,12 @@
+U 6 upside
+R 2 top
+D 2 side
+R 2 bottom
+U 2 side
+R 2 top
+D 2 side
+R 2 bottom
+U 2 side
+R 2 top
+D 6 foo
+L 10 done
