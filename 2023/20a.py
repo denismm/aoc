@@ -43,7 +43,7 @@ network_state: set[str] = set()
 
 live_modules: deque[str] = deque()
 
-debug = 1
+debug: set[str] = { 'state', 'pulse' }
 
 sent_pulses: list[int] = [0, 0]
 
@@ -51,12 +51,12 @@ def handle_pulse(source: str, dest: str, high: bool) -> None:
     # signal changes state
     sent_pulses[high] += 1
     pulse_name = ('low', 'high')[high]
-    if debug:
+    if 'pulse' in debug:
         print(f"{source} -{pulse_name}-> {dest}")
     # output modules may not be in module list
     # we don't do anything with them
     if dest not in modules:
-        if debug:
+        if 'rcv' in debug:
             print(f"module {dest} recieved {pulse_name}")
         return
     dest_module = modules[dest]
@@ -85,12 +85,12 @@ def handle_pulse(source: str, dest: str, high: bool) -> None:
 def handle_activate(module_name: str) -> None:
     high_pulse: bool = False
     module = modules[module_name]
-    if debug >= 2:
+    if 'handle' in debug:
         print(f"handling module {module_name}: {module}")
     if module.type == '%':
         high_pulse = module_name in network_state
     elif module.type == '&':
-        if debug >= 2:
+        if 'conj' in debug:
             memory = [x for x in network_state if x.startswith(module_name)]
             print(f"{module_inputs[module_name]=} {memory=}")
         for input in module_inputs[module_name]:
@@ -121,8 +121,8 @@ for i in range(1000):
     handle_pulse('button', 'broadcaster', False)
     while (live_modules):
         handle_activate(live_modules.popleft())
-    if debug:
-        print(network_state)
+    if 'state' in debug:
+        print(i, sorted([s for s in network_state if 'put' not in s]))
 
 if loop_size > 0:
     repeats = 1000 / loop_size
