@@ -108,7 +108,7 @@ def handle_activate(module_name: str) -> None:
 # button-presses
 loop_size = 0
 seen_states: dict[frozenset[str], int] = {}
-for i in range(1000):
+for i in range(10000):
 
     frozen_state = frozenset(network_state)
     if True and frozen_state in seen_states:
