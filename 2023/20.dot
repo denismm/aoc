@@ -1,0 +1,171 @@
+digraph "AoC 20" {
+	E5 [label="%E5"]
+	N6 [label="%N6"]
+	W2 [label="%W2"]
+	N3 [label="%N3"]
+	E [label="&E"]
+	N9 [label="%N9"]
+	E10 [label="%E10"]
+	N0 [label="%N0"]
+	S10 [label="%S10"]
+	N [label="&N"]
+	S3 [label="%S3"]
+	E9 [label="%E9"]
+	Ninput [label="%Ninput"]
+	S2 [label="%S2"]
+	Noutput [label="&Noutput"]
+	S4 [label="%S4"]
+	W1 [label="%W1"]
+	W8 [label="%W8"]
+	Soutput [label="&Soutput"]
+	W9 [label="%W9"]
+	N10 [label="%N10"]
+	preout [label="&preout"]
+	N2 [label="%N2"]
+	Sinput [label="%Sinput"]
+	N1 [label="%N1"]
+	W4 [label="%W4"]
+	E1 [label="%E1"]
+	S7 [label="%S7"]
+	Eoutput [label="&Eoutput"]
+	S5 [label="%S5"]
+	E7 [label="%E7"]
+	S6 [label="%S6"]
+	Winput [label="%Winput"]
+	S [label="&S"]
+	S0 [label="%S0"]
+	W10 [label="%W10"]
+	E2 [label="%E2"]
+	W [label="&W"]
+	S8 [label="%S8"]
+	E8 [label="%E8"]
+	S1 [label="%S1"]
+	N4 [label="%N4"]
+	W6 [label="%W6"]
+	broadcaster [label=broadcaster]
+	E3 [label="%E3"]
+	output [label=output]
+	E4 [label="%E4"]
+	S9 [label="%S9"]
+	N7 [label="%N7"]
+	E0 [label="%E0"]
+	N8 [label="%N8"]
+	E6 [label="%E6"]
+	Woutput [label="&Woutput"]
+	W3 [label="%W3"]
+	W0 [label="%W0"]
+	W7 [label="%W7"]
+	Einput [label="%Einput"]
+	W5 [label="%W5"]
+	N5 [label="%N5"]
+	N2 -> N3
+	E5 -> E6
+	E5 -> E
+	S7 -> S8
+	S7 -> S
+	W9 -> W
+	W9 -> W10
+	E8 -> E9
+	E8 -> E
+	N -> N7
+	N -> Noutput
+	N -> N5
+	N -> N0
+	N -> N1
+	N -> Ninput
+	N -> N2
+	W -> W4
+	W -> W3
+	W -> Winput
+	W -> Woutput
+	W -> W6
+	W5 -> W6
+	W5 -> W
+	Soutput -> preout
+	W1 -> W
+	W1 -> W2
+	S10 -> S
+	E4 -> E5
+	S1 -> S2
+	N9 -> N
+	N9 -> N10
+	Winput -> W
+	Winput -> W0
+	W6 -> W7
+	N4 -> N5
+	N4 -> N
+	Woutput -> preout
+	E3 -> E4
+	S0 -> S
+	S0 -> S1
+	N7 -> N8
+	N8 -> N9
+	N8 -> N
+	S -> S4
+	S -> Soutput
+	S -> S1
+	S -> S2
+	S -> Sinput
+	Noutput -> preout
+	E6 -> E7
+	E1 -> E2
+	Sinput -> S
+	Sinput -> S0
+	N3 -> N
+	N3 -> N4
+	broadcaster -> Einput
+	broadcaster -> Winput
+	broadcaster -> Sinput
+	broadcaster -> Ninput
+	W2 -> W
+	W2 -> W3
+	E0 -> E1
+	E0 -> E
+	E10 -> E
+	S6 -> S
+	S6 -> S7
+	E9 -> E
+	E9 -> E10
+	S8 -> S
+	S8 -> S9
+	W8 -> W
+	W8 -> W9
+	S9 -> S
+	S9 -> S10
+	W3 -> W4
+	N5 -> N6
+	E7 -> E
+	E7 -> E8
+	N6 -> N
+	N6 -> N7
+	Eoutput -> preout
+	N1 -> N2
+	S3 -> S4
+	S3 -> S
+	W4 -> W5
+	S5 -> S
+	S5 -> S6
+	W7 -> W
+	W7 -> W8
+	N0 -> N1
+	E2 -> E3
+	Ninput -> N
+	Ninput -> N0
+	E -> E6
+	E -> E2
+	E -> Einput
+	E -> E3
+	E -> E4
+	E -> Eoutput
+	E -> E1
+	N10 -> N
+	preout -> output
+	S2 -> S3
+	Einput -> E
+	Einput -> E0
+	S4 -> S5
+	W0 -> W1
+	W0 -> W
+	W10 -> W
+}
+

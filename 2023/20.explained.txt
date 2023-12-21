@@ -1,0 +1,58 @@
+%N2 -> N3
+%E5 -> E6, E
+%S7 -> S8, S
+%W9 -> W, W10
+%E8 -> E9, E
+&N -> N7, Noutput, N5, N0, N1, Ninput, N2
+&W -> W4, W3, Winput, Woutput, W6
+%W5 -> W6, W
+&Soutput -> preout
+%W1 -> W, W2
+%S10 -> S
+%E4 -> E5
+%S1 -> S2
+%N9 -> N, N10
+%Winput -> W, W0
+%W6 -> W7
+%N4 -> N5, N
+&Woutput -> preout
+%E3 -> E4
+%S0 -> S, S1
+%N7 -> N8
+%N8 -> N9, N
+&S -> S4, Soutput, S1, S2, Sinput
+&Noutput -> preout
+%E6 -> E7
+%E1 -> E2
+%Sinput -> S, S0
+%N3 -> N, N4
+broadcaster -> Einput, Winput, Sinput, Ninput
+%W2 -> W, W3
+%E0 -> E1, E
+%E10 -> E
+%S6 -> S, S7
+%E9 -> E, E10
+%S8 -> S, S9
+%W8 -> W, W9
+%S9 -> S, S10
+%W3 -> W4
+%N5 -> N6
+%E7 -> E, E8
+%N6 -> N, N7
+&Eoutput -> preout
+%N1 -> N2
+%S3 -> S4, S
+%W4 -> W5
+%S5 -> S, S6
+%W7 -> W, W8
+%N0 -> N1
+%E2 -> E3
+%Ninput -> N, N0
+&E -> E6, E2, Einput, E3, E4, Eoutput, E1
+%N10 -> N
+&preout -> output
+%S2 -> S3
+%Einput -> E, E0
+%S4 -> S5
+%W0 -> W1, W
+%W10 -> W
