@@ -1,0 +1,6 @@
+broadcaster -> Xinput
+%Xinput -> X, X00
+%X00 -> X
+%X -> Xinput, Xoutput
+&Xoutput -> preout
+&preout -> output

@@ -109,7 +109,7 @@ seen_states: dict[frozenset[str], int] = {}
 for i in range(1000):
 
     frozen_state = frozenset(network_state)
-    if False and frozen_state in seen_states:
+    if True and frozen_state in seen_states:
         loop_start = seen_states[frozen_state]
         print(f"loop found from {i} to {loop_start}")
         if loop_start != 0:
@@ -122,7 +122,7 @@ for i in range(1000):
     while (live_modules):
         handle_activate(live_modules.popleft())
     if 'state' in debug:
-        print(i, sorted([s for s in network_state if 'put' not in s]))
+        print(i, sorted(network_state))
 
 if loop_size > 0:
     repeats = 1000 / loop_size

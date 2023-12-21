@@ -1,0 +1,18 @@
+for structure X:
+    return true at 2X
+    if X is odd:
+        loop length is 2X + 1
+        loop back to 1
+        so return true if i % (2x + 1) == -1
+    if X is even:
+        loop length is 1 if 2 less than a power of 2
+
+N: 11101011000
+E: 11110100001
+W: 11110100111
+S: 11111101001
+
+N: 1880
+E: 1953
+W: 1959
+S: 2025
