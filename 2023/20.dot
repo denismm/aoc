@@ -1,171 +1,171 @@
 digraph "AoC 20" {
-	E5 [label="%E5"]
-	N6 [label="%N6"]
-	W2 [label="%W2"]
-	N3 [label="%N3"]
-	E [label="&E"]
-	N9 [label="%N9"]
-	E10 [label="%E10"]
-	N0 [label="%N0"]
-	S10 [label="%S10"]
-	N [label="&N"]
-	S3 [label="%S3"]
-	E9 [label="%E9"]
-	Ninput [label="%Ninput"]
-	S2 [label="%S2"]
-	Noutput [label="&Noutput"]
-	S4 [label="%S4"]
-	W1 [label="%W1"]
-	W8 [label="%W8"]
-	Soutput [label="&Soutput"]
-	W9 [label="%W9"]
-	N10 [label="%N10"]
-	preout [label="&preout"]
-	N2 [label="%N2"]
-	Sinput [label="%Sinput"]
-	N1 [label="%N1"]
-	W4 [label="%W4"]
-	E1 [label="%E1"]
-	S7 [label="%S7"]
-	Eoutput [label="&Eoutput"]
-	S5 [label="%S5"]
-	E7 [label="%E7"]
-	S6 [label="%S6"]
-	Winput [label="%Winput"]
+	N08 [label="%N08"]
 	S [label="&S"]
-	S0 [label="%S0"]
-	W10 [label="%W10"]
-	E2 [label="%E2"]
-	W [label="&W"]
-	S8 [label="%S8"]
-	E8 [label="%E8"]
-	S1 [label="%S1"]
-	N4 [label="%N4"]
-	W6 [label="%W6"]
-	broadcaster [label=broadcaster]
-	E3 [label="%E3"]
-	output [label=output]
-	E4 [label="%E4"]
-	S9 [label="%S9"]
-	N7 [label="%N7"]
-	E0 [label="%E0"]
-	N8 [label="%N8"]
-	E6 [label="%E6"]
+	Ninput [label="%Ninput"]
+	W02 [label="%W02"]
+	N04 [label="%N04"]
+	S05 [label="%S05"]
+	W04 [label="%W04"]
+	E [label="&E"]
 	Woutput [label="&Woutput"]
-	W3 [label="%W3"]
-	W0 [label="%W0"]
-	W7 [label="%W7"]
+	W08 [label="%W08"]
+	Soutput [label="&Soutput"]
+	preout [label="&preout"]
+	E06 [label="%E06"]
+	N03 [label="%N03"]
+	S06 [label="%S06"]
+	E05 [label="%E05"]
+	N09 [label="%N09"]
+	S08 [label="%S08"]
+	W01 [label="%W01"]
+	W [label="&W"]
+	N02 [label="%N02"]
+	E07 [label="%E07"]
+	output [label=output]
+	E02 [label="%E02"]
 	Einput [label="%Einput"]
-	W5 [label="%W5"]
-	N5 [label="%N5"]
-	N2 -> N3
-	E5 -> E6
-	E5 -> E
-	S7 -> S8
-	S7 -> S
-	W9 -> W
-	W9 -> W10
-	E8 -> E9
-	E8 -> E
-	N -> N7
-	N -> Noutput
-	N -> N5
-	N -> N0
-	N -> N1
-	N -> Ninput
-	N -> N2
-	W -> W4
-	W -> W3
-	W -> Winput
-	W -> Woutput
-	W -> W6
-	W5 -> W6
-	W5 -> W
-	Soutput -> preout
-	W1 -> W
-	W1 -> W2
-	S10 -> S
-	E4 -> E5
-	S1 -> S2
-	N9 -> N
-	N9 -> N10
-	Winput -> W
-	Winput -> W0
-	W6 -> W7
-	N4 -> N5
-	N4 -> N
-	Woutput -> preout
-	E3 -> E4
+	E03 [label="%E03"]
+	Sinput [label="%Sinput"]
+	N [label="&N"]
+	E0 [label="%E0"]
+	S09 [label="%S09"]
+	N0 [label="%N0"]
+	W07 [label="%W07"]
+	E01 [label="%E01"]
+	N10 [label="%N10"]
+	W0 [label="%W0"]
+	Noutput [label="&Noutput"]
+	E10 [label="%E10"]
+	S01 [label="%S01"]
+	S02 [label="%S02"]
+	N01 [label="%N01"]
+	N07 [label="%N07"]
+	S04 [label="%S04"]
+	W03 [label="%W03"]
+	S03 [label="%S03"]
+	N05 [label="%N05"]
+	W06 [label="%W06"]
+	E08 [label="%E08"]
+	broadcaster [label=broadcaster]
+	S0 [label="%S0"]
+	W05 [label="%W05"]
+	W10 [label="%W10"]
+	Winput [label="%Winput"]
+	S07 [label="%S07"]
+	Eoutput [label="&Eoutput"]
+	E09 [label="%E09"]
+	W09 [label="%W09"]
+	N06 [label="%N06"]
+	E04 [label="%E04"]
+	S10 [label="%S10"]
+	E0 -> E01
+	E0 -> E
+	E01 -> E02
+	E02 -> E03
+	E03 -> E04
+	E04 -> E05
+	E05 -> E06
+	E05 -> E
+	E06 -> E07
+	E07 -> E
+	E07 -> E08
+	E08 -> E09
+	E08 -> E
+	E09 -> E
+	E09 -> E10
+	E10 -> E
+	Einput -> E
+	Einput -> E0
+	N0 -> N01
+	N01 -> N02
+	N02 -> N03
+	N03 -> N
+	N03 -> N04
+	N04 -> N05
+	N04 -> N
+	N05 -> N06
+	N06 -> N
+	N06 -> N07
+	N07 -> N08
+	N08 -> N09
+	N08 -> N
+	N09 -> N
+	N09 -> N10
+	N10 -> N
+	Ninput -> N
+	Ninput -> N0
 	S0 -> S
-	S0 -> S1
-	N7 -> N8
-	N8 -> N9
-	N8 -> N
-	S -> S4
-	S -> Soutput
-	S -> S1
-	S -> S2
-	S -> Sinput
-	Noutput -> preout
-	E6 -> E7
-	E1 -> E2
+	S0 -> S01
+	S01 -> S02
+	S02 -> S03
+	S03 -> S04
+	S03 -> S
+	S04 -> S05
+	S05 -> S
+	S05 -> S06
+	S06 -> S
+	S06 -> S07
+	S07 -> S08
+	S07 -> S
+	S08 -> S
+	S08 -> S09
+	S09 -> S
+	S09 -> S10
+	S10 -> S
 	Sinput -> S
 	Sinput -> S0
-	N3 -> N
-	N3 -> N4
+	W0 -> W01
+	W0 -> W
+	W01 -> W
+	W01 -> W02
+	W02 -> W
+	W02 -> W03
+	W03 -> W04
+	W04 -> W05
+	W05 -> W06
+	W05 -> W
+	W06 -> W07
+	W07 -> W
+	W07 -> W08
+	W08 -> W
+	W08 -> W09
+	W09 -> W
+	W09 -> W10
+	W10 -> W
+	Winput -> W
+	Winput -> W0
+	E -> E06
+	E -> E02
+	E -> Einput
+	E -> E03
+	E -> E04
+	E -> Eoutput
+	E -> E01
+	Eoutput -> preout
+	N -> N07
+	N -> Noutput
+	N -> N05
+	N -> N0
+	N -> N01
+	N -> Ninput
+	N -> N02
+	Noutput -> preout
+	S -> S04
+	S -> Soutput
+	S -> S01
+	S -> S02
+	S -> Sinput
+	Soutput -> preout
+	W -> W04
+	W -> W03
+	W -> Winput
+	W -> Woutput
+	W -> W06
+	Woutput -> preout
+	preout -> output
 	broadcaster -> Einput
 	broadcaster -> Winput
 	broadcaster -> Sinput
 	broadcaster -> Ninput
-	W2 -> W
-	W2 -> W3
-	E0 -> E1
-	E0 -> E
-	E10 -> E
-	S6 -> S
-	S6 -> S7
-	E9 -> E
-	E9 -> E10
-	S8 -> S
-	S8 -> S9
-	W8 -> W
-	W8 -> W9
-	S9 -> S
-	S9 -> S10
-	W3 -> W4
-	N5 -> N6
-	E7 -> E
-	E7 -> E8
-	N6 -> N
-	N6 -> N7
-	Eoutput -> preout
-	N1 -> N2
-	S3 -> S4
-	S3 -> S
-	W4 -> W5
-	S5 -> S
-	S5 -> S6
-	W7 -> W
-	W7 -> W8
-	N0 -> N1
-	E2 -> E3
-	Ninput -> N
-	Ninput -> N0
-	E -> E6
-	E -> E2
-	E -> Einput
-	E -> E3
-	E -> E4
-	E -> Eoutput
-	E -> E1
-	N10 -> N
-	preout -> output
-	S2 -> S3
-	Einput -> E
-	Einput -> E0
-	S4 -> S5
-	W0 -> W1
-	W0 -> W
-	W10 -> W
 }
 
