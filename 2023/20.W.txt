@@ -1,0 +1,16 @@
+%W00 -> W01, W
+%W01 -> W, W02
+%W02 -> W, W03
+%W03 -> W04
+%W04 -> W05
+%W05 -> W06, W
+%W06 -> W07
+%W07 -> W, W08
+%W08 -> W, W09
+%W09 -> W, W10
+%W10 -> W
+%Winput -> W, W00
+&W -> W04, W03, Winput, Woutput, W06
+&Woutput -> preout
+&preout -> output
+broadcaster -> Winput

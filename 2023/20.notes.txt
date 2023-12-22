@@ -16,3 +16,11 @@ N: 1880
 E: 1953
 W: 1959
 S: 2025
+
+loop start, loop length, successes:
+20.N.txt:	 1 3761	[3760]
+20.E.txt:	 1 3907	[3906]
+20.W.txt:	 1 3919	[3918]
+20.S.txt:	 1 4051	[4050]
+
+BUT WE'RE STARTING WITH 1 so just use the LCM (sigh)

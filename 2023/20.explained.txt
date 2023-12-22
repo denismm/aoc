@@ -48,7 +48,7 @@
 %Winput -> W, W00
 &E -> E06, E02, Einput, E03, E04, Eoutput, E01
 &Eoutput -> preout
-&N -> N07, Noutput, N05, N0, N01, Ninput, N02
+&N -> N07, Noutput, N05, N00, N01, Ninput, N02
 &Noutput -> preout
 &S -> S04, Soutput, S01, S02, Sinput
 &Soutput -> preout
