@@ -40,7 +40,7 @@ above: dict[int, set[int]] = {}
 # drop bricks into pile
 for i, fbrick in enumerate(flying_bricks):
     # lower until supported in pile
-    print(f"dropping {i} {fbrick}")
+    # print(f"dropping {i} {fbrick}")
     brick = make_brick(fbrick)
     # don't drop it if it's at z=1
     supporters: set[int] = set()
@@ -48,7 +48,7 @@ for i, fbrick in enumerate(flying_bricks):
         new_brick = {add_direction(pos, down) for pos in brick}
         collisions = new_brick & set(pile.keys())
         if collisions:
-            print(f"{i} {fbrick} supported at {collisions}")
+            # print(f"{i} {fbrick} supported at {collisions}")
             for pos in collisions:
                 supporter = pile[pos]
                 supporters.add(supporter)
@@ -57,7 +57,7 @@ for i, fbrick in enumerate(flying_bricks):
         brick = new_brick
         fbrick = tuple(add_direction(pos, down) for pos in fbrick)
         # print(f"{i} dropping to {fbrick}")
-    print(f"{i} landed at {fbrick}")
+    # print(f"{i} landed at {fbrick}")
     for position in brick:
         if position in pile:
             raise ValueError("brick {i} intersecting {pile[position]} at {position}")
@@ -93,32 +93,22 @@ for i in range(len(bricks)):
         free_bricks += 1
 print(free_bricks)
 
-# also find biggest chain reaction fall
-best_chain = 0
-best_chain_members: set[int] = set()
-for i in range(len(bricks)):
-    # only consider bricks on the ground
-    if below[i]:
-        continue
-    chain_bricks: set[int] = {i}
+# also find total chain reaction fall
+falls_for_brick: dict[int, set[int]] = {}
+# start at the top
+for i in reversed(range(len(bricks))):
+    chain_bricks: set[int] = set()
     fallers: deque[int] = deque(above[i])
     while fallers:
         falling_brick = fallers.popleft()
-        supporters = below[falling_brick] - chain_bricks
+        supporters = below[falling_brick] - chain_bricks - {i}
         if not supporters:
             # print(f"{falling_brick} not supported, falling")
             chain_bricks.add(falling_brick)
-            for next_brick in above[falling_brick]:
+            if i in falls_for_brick:
+                chain_bricks.update(falls_for_brick[i])
+            for next_brick in above[falling_brick] - chain_bricks:
                 if next_brick not in fallers:
                     fallers.append(next_brick)
-        else:
-            print(f"{falling_brick} supported by {supporters}")
-
-    for j, supports in below.items():
-        if supports and j not in chain_bricks and supports < chain_bricks:
-            raise ValueError(f"missed {j} somehow")
-    print(f"{i}: {len(chain_bricks)}")
-    if len(chain_bricks) > best_chain:
-        best_chain = len(chain_bricks)
-        best_chain_members = chain_bricks
-print(best_chain)
+    falls_for_brick[i] = chain_bricks
+print(sum([len(v) for v in falls_for_brick.values()]))
