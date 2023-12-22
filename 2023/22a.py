@@ -2,6 +2,7 @@
 import sys
 from positions import Position, add_direction
 from pprint import pprint
+from collections import deque
 
 filename = sys.argv[1]
 
@@ -33,12 +34,13 @@ def make_brick(fbrick: FlyingBrick) -> Brick:
 pile: Grid = {}
 bricks: list[Brick] = []
 # for each brick, what bricks are directly below it?
-support_for_brick: dict[int, set[int]] = {}
-supported_by_brick: dict[int, set[int]] = {}
+below: dict[int, set[int]] = {}
+above: dict[int, set[int]] = {}
 
 # drop bricks into pile
 for i, fbrick in enumerate(flying_bricks):
     # lower until supported in pile
+    print(f"dropping {i} {fbrick}")
     brick = make_brick(fbrick)
     # don't drop it if it's at z=1
     supporters: set[int] = set()
@@ -46,27 +48,42 @@ for i, fbrick in enumerate(flying_bricks):
         new_brick = {add_direction(pos, down) for pos in brick}
         collisions = new_brick & set(pile.keys())
         if collisions:
+            print(f"{i} {fbrick} supported at {collisions}")
             for pos in collisions:
                 supporter = pile[pos]
                 supporters.add(supporter)
-                supported_by_brick[supporter].add(i)
+                above[supporter].add(i)
             break
         brick = new_brick
         fbrick = tuple(add_direction(pos, down) for pos in fbrick)
+        # print(f"{i} dropping to {fbrick}")
+    print(f"{i} landed at {fbrick}")
     for position in brick:
+        if position in pile:
+            raise ValueError("brick {i} intersecting {pile[position]} at {position}")
         pile[position] = i
     bricks.append(brick)
-    support_for_brick[i] = supporters
-    supported_by_brick[i] = set()
+    below[i] = supporters
+    above[i] = set()
+
+for i, supporters in below.items():
+    for j in supporters:
+        if i not in above[j]:
+            raise ValueError(f"{j} supports {i} but not in above")
+
+for i, supporteds in above.items():
+    for j in supporteds:
+        if i not in below[j]:
+            raise ValueError(f"{j} supported by {i} but not in below")
 
 # for each brick, check supportiveness
 
 free_bricks = 0
 for i in range(len(bricks)):
-    supported_bricks = supported_by_brick[i]
+    supported_bricks = above[i]
     removable = True
     for brick_no in supported_bricks:
-        supporters = support_for_brick[brick_no] - {i}
+        supporters = below[brick_no] - {i}
         if not supporters:
             # I don't think we need to worry about bricks on the ground
             removable = False
@@ -75,3 +92,33 @@ for i in range(len(bricks)):
         # print(f"brick {i} can be removed")
         free_bricks += 1
 print(free_bricks)
+
+# also find biggest chain reaction fall
+best_chain = 0
+best_chain_members: set[int] = set()
+for i in range(len(bricks)):
+    # only consider bricks on the ground
+    if below[i]:
+        continue
+    chain_bricks: set[int] = {i}
+    fallers: deque[int] = deque(above[i])
+    while fallers:
+        falling_brick = fallers.popleft()
+        supporters = below[falling_brick] - chain_bricks
+        if not supporters:
+            # print(f"{falling_brick} not supported, falling")
+            chain_bricks.add(falling_brick)
+            for next_brick in above[falling_brick]:
+                if next_brick not in fallers:
+                    fallers.append(next_brick)
+        else:
+            print(f"{falling_brick} supported by {supporters}")
+
+    for j, supports in below.items():
+        if supports and j not in chain_bricks and supports < chain_bricks:
+            raise ValueError(f"missed {j} somehow")
+    print(f"{i}: {len(chain_bricks)}")
+    if len(chain_bricks) > best_chain:
+        best_chain = len(chain_bricks)
+        best_chain_members = chain_bricks
+print(best_chain)
