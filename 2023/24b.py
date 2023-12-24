@@ -2,6 +2,7 @@
 import sys
 from positions import Position, Direction, get_direction, scale_direction, add_direction
 from typing import NamedTuple
+from itertools import permutations
 
 filename = sys.argv[1]
 
@@ -23,10 +24,13 @@ with open(filename, "r") as f:
 # check the other stones, bailing when we miss
 # with 300 stones, if these two aren't more than hits 600
 # then it'll be 360_000 checks, mostly algebra so shouldn't be long
+# but no, t can be pretty large I think - all the coordinates are 15 digits
+# so let's try every combination of stones so we find the first two
 
-def check_pair(timestamps: tuple[int, int]) -> None:
+def check_pair(timestamps: tuple[int, int], stone_choices: tuple[int, int]) -> None:
     collision_points: list[Position] = []
-    for (stone, t) in zip(stones, timestamps):
+    chosen_stones = [stones[i] for i in stone_choices]
+    for (stone, t) in zip(chosen_stones, timestamps):
         point = add_direction(stone.pos, scale_direction(stone.dir, t))
         collision_points.append(point)
     point_difference: Direction = get_direction(*collision_points)
@@ -72,8 +76,8 @@ def check_pair(timestamps: tuple[int, int]) -> None:
 exp_tracker = 10
 for i in range(2, 100000000000):
     for j in range(1, i):
-        for timestamps in ( (i, j), (j, i) ):
-            check_pair(timestamps)
+        for stone_choices in permutations(range(len(stones)), 2):
+            check_pair((i, j), stone_choices)   # type: ignore [arg-type]
     if i == exp_tracker:
         print( f"done with {i}")
         exp_tracker *= 10
