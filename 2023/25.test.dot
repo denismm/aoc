@@ -1,0 +1,51 @@
+graph "AoC 25" {
+	hfx
+	rhn
+	rzs
+	bvb
+	nvd
+	xhk
+	lsr
+	jqt
+	lhk
+	rsh
+	pzl
+	qnr
+	ntq
+	cmg
+	frs
+	jqt -- xhk
+	hfx -- rhn
+	hfx -- ntq
+	hfx -- pzl
+	jqt -- rhn
+	jqt -- ntq
+	lsr -- pzl
+	rhn -- xhk
+	rsh -- rzs
+	frs -- rsh
+	frs -- lsr
+	qnr -- rzs
+	ntq -- xhk
+	bvb -- hfx
+	frs -- qnr
+	pzl -- rsh
+	jqt -- nvd
+	cmg -- nvd
+	cmg -- lhk
+	lhk -- nvd
+	lsr -- rzs
+	cmg -- rzs
+	bvb -- cmg
+	nvd -- qnr
+	lsr -- rsh
+	lhk -- lsr
+	bvb -- xhk
+	nvd -- pzl
+	frs -- lhk
+	bvb -- rhn
+	hfx -- xhk
+	bvb -- ntq
+	cmg -- qnr
+}
+
