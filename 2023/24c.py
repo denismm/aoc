@@ -42,26 +42,20 @@ def distance_for_timestamps(timestamps: tuple[int, ...]) -> float:
         )
         for stone, timestamp in zip(interesting_stones, timestamps)
     ]
-    # tetrahedron_sum = 0.0
-    longest_distance = 0.0
-    farthest_pair: tuple[Position, ...] = ()
-    pair_distance: dict[frozenset[Position], float] = {}
-    for pair in combinations(points, 2):
+
+    # I _know_ the order is 0, 3, 2, 1
+    # from looking at the scad file
+    # so just add _those_.
+    # but divide by the farthest distance? no :(
+    # should I add up the triangles?
+    # or just do line distance?
+
+    distance_sum = 0.0
+    for pair_indices in [(0, 3), (3, 2), (2, 1)]:
+        pair = [points[i] for i in pair_indices]
         subdir = get_direction(pair[0], pair[1])
         sublen = sqrt(sum([a*a for a in subdir]))
-        pair_distance[frozenset(pair)] = sublen
-        # tetrahedron_sum += sublen
-        if sublen > longest_distance:
-            longest_distance = sublen
-            farthest_pair = pair
-    near_pair = [ point for point in points if point not in farthest_pair]
-    distance_sum = pair_distance[frozenset(near_pair)]
-    possible_outer_distances: list[float] = []
-    for nearpoints in (near_pair, list(reversed(near_pair))):
-        possible_outer_distances.append(sum([
-            pair_distance[frozenset([far, near])] for far, near in zip(farthest_pair, nearpoints)
-        ]))
-    distance_sum += min(possible_outer_distances)
+        distance_sum += sublen
     return distance_sum
 
 while current_increment > 0:
