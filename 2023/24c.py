@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys
-from positions import Position, Direction, get_direction, scale_direction, add_direction
+from positions import Position, Direction, get_direction, scale_direction, add_direction, FloatDirection
 from math import sqrt
 from typing import NamedTuple
 from itertools import combinations, product
@@ -27,12 +27,22 @@ with open(filename, "r") as f:
 # Sadly there are no parallel lines.
 
 # let's find a colinear point on four lines through refining an approximation
-interesting_stones = stones[:4]
+# I _know_ the order is 0, 3, 2, 1
+# from looking at the scad file
+# so just add _those_.
+# but divide by the farthest distance? no :(
 if stones[0].pos[0] > 100000:
-    current_increment = 10 ** 13
+    current_increment = 10 ** 11
+    # start with close results from a different method
+    # I've been re-filling results from this same script in a few cycles
+    current_estimates = [177443247580, 403663893515, 673879272412, 1008195171796]
+    point_order = [1, 2, 3, 0]
 else:
-    current_increment = 10 ** 2
-current_estimates = [0, 0, 0, 0]
+    current_increment = 10 ** 0
+    current_estimates = [0, 0, 0, 0]
+    point_order = [1, 2, 0, 3]
+
+interesting_stones = [stones[i] for i in point_order]
 
 def distance_for_timestamps(timestamps: tuple[int, ...]) -> float:
     points = [
@@ -42,20 +52,25 @@ def distance_for_timestamps(timestamps: tuple[int, ...]) -> float:
         )
         for stone, timestamp in zip(interesting_stones, timestamps)
     ]
+    # print(timestamps, points)
 
-    # I _know_ the order is 0, 3, 2, 1
-    # from looking at the scad file
-    # so just add _those_.
-    # but divide by the farthest distance? no :(
-    # should I add up the triangles?
-    # or just do line distance?
+    # order is now correct
+    # let's try distance of 1 and 2 from line 03.
 
+    axis_vec = get_direction(points[0], points[3])
+    axis_len = sqrt(sum([a*a for a in axis_vec]))
+    unit_dir: FloatDirection = tuple((a / axis_len) for a in axis_vec)
     distance_sum = 0.0
-    for pair_indices in [(0, 3), (3, 2), (2, 1)]:
-        pair = [points[i] for i in pair_indices]
-        subdir = get_direction(pair[0], pair[1])
-        sublen = sqrt(sum([a*a for a in subdir]))
+    # print(f"{axis_vec=} {axis_len=} {unit_dir=}")
+    for point in points[1:3]:
+        point_vector = get_direction(points[0], point)
+        t = sum([a * b for a, b in zip(point_vector, unit_dir)])
+        projection_point = tuple(b + t * d for b, d in zip(points[0], unit_dir))
+        projection_vec = tuple((a - b) for a, b in zip(projection_point, point))
+        sublen = sqrt(sum([a*a for a in projection_vec]))
+        # print(f"{point_vector=} {t=} {projection_point=} {projection_vec=} {sublen=}")
         distance_sum += sublen
+    # print(distance_sum)
     return distance_sum
 
 while current_increment > 0:
@@ -74,6 +89,8 @@ while current_increment > 0:
     for i in range(4):
         current_estimates[i] += current_increment * best_timestamps[i]
     current_increment //= 10
+    if best_distances == 0:
+        break
     print(current_estimates)
 
 # for some of these, this is clearly wrong
@@ -125,5 +142,6 @@ def check_pair(timestamps: tuple[int, int], stone_choices: tuple[int, int]) -> N
     exit(0)
 
 for stone_choices in combinations(range(4), 2):
-    check_pair(tuple(current_estimates[i] for i in stone_choices), stone_choices)       # type: ignore [arg-type]
+    true_stone_choices = tuple( point_order[i] for i in stone_choices)
+    check_pair(tuple(current_estimates[i] for i in stone_choices), true_stone_choices)       # type: ignore [arg-type]
 exit(0)
