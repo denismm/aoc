@@ -1,6 +1,8 @@
 Position = tuple[int, ...]
 Direction = Position
 
+FloatDirection = tuple[float, ...]
+
 cardinal_directions: tuple[Direction, ...] = ((1, 0), (0, 1), (-1, 0), (0, -1))
 direction_symbols = ">v<^"
 udlr_symbols = "RDLU"

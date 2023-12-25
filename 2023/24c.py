@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
-from positions import Position, Direction, get_direction, scale_direction, add_direction, manhattan
-from math import lcm, sqrt
+from positions import Position, Direction, get_direction, scale_direction, add_direction
+from math import sqrt
 from typing import NamedTuple
 from itertools import combinations, product
 
@@ -28,8 +28,10 @@ with open(filename, "r") as f:
 
 # let's find a colinear point on four lines through refining an approximation
 interesting_stones = stones[:4]
-# current_increment = 10 ** 13
-current_increment = 10 ** 2
+if stones[0].pos[0] > 100000:
+    current_increment = 10 ** 13
+else:
+    current_increment = 10 ** 2
 current_estimates = [0, 0, 0, 0]
 
 def distance_for_timestamps(timestamps: tuple[int, ...]) -> float:
@@ -37,21 +39,30 @@ def distance_for_timestamps(timestamps: tuple[int, ...]) -> float:
         add_direction(
             stone.pos,
             scale_direction( stone.dir, timestamp)
-        ) 
+        )
         for stone, timestamp in zip(interesting_stones, timestamps)
     ]
-    distance_sum = 0.0
-    print(points)
+    # tetrahedron_sum = 0.0
+    longest_distance = 0.0
+    farthest_pair: tuple[Position, ...] = ()
+    pair_distance: dict[frozenset[Position], float] = {}
     for pair in combinations(points, 2):
         subdir = get_direction(pair[0], pair[1])
-        sublen = sqrt(sum(a*a for a in subdir))
-        print(pair, sublen)
-        distance_sum += sublen
+        sublen = sqrt(sum([a*a for a in subdir]))
+        pair_distance[frozenset(pair)] = sublen
+        # tetrahedron_sum += sublen
+        if sublen > longest_distance:
+            longest_distance = sublen
+            farthest_pair = pair
+    near_pair = [ point for point in points if point not in farthest_pair]
+    distance_sum = pair_distance[frozenset(near_pair)]
+    possible_outer_distances: list[float] = []
+    for nearpoints in (near_pair, list(reversed(near_pair))):
+        possible_outer_distances.append(sum([
+            pair_distance[frozenset([far, near])] for far, near in zip(farthest_pair, nearpoints)
+        ]))
+    distance_sum += min(possible_outer_distances)
     return distance_sum
-
-print(distance_for_timestamps( (5, 2, 4, 6) ))
-print(distance_for_timestamps( (5, 1, 4, 6) ))
-exit(0)
 
 while current_increment > 0:
     best_timestamps: tuple[int, ...] = ()
@@ -59,11 +70,10 @@ while current_increment > 0:
     for timestamps in product(range(-9, 10), repeat=4):
         test_timestamps = tuple(
             current_estimate + timestamp * current_increment
-            for timestamp, current_estimate in zip (timestamps, current_estimates)
-        ) 
+            for timestamp, current_estimate in zip(timestamps, current_estimates)
+        )
         distance_sum = distance_for_timestamps(test_timestamps)
         if best_timestamps == () or distance_sum < best_distances:
-            print(distance_sum, timestamps)
             best_timestamps = timestamps
             best_distances = distance_sum
     print(best_timestamps, best_distances)
@@ -121,15 +131,5 @@ def check_pair(timestamps: tuple[int, int], stone_choices: tuple[int, int]) -> N
     exit(0)
 
 for stone_choices in combinations(range(4), 2):
-    check_pair(tuple(current_estimates[i] for i in stone_choices), stone_choices)
+    check_pair(tuple(current_estimates[i] for i in stone_choices), stone_choices)       # type: ignore [arg-type]
 exit(0)
-
-# find parallels
-for stone_choices in combinations(range(len(stones)), 2):
-    chosen_stones = [stones[i] for i in stone_choices]
-    magnitudes = [manhattan((0, 0, 0), stone.dir) for stone in chosen_stones]
-    common = lcm(*magnitudes)
-    same_slopes = [scale_direction(stone.dir, common // magnitude) for stone, magnitude in zip(chosen_stones, magnitudes)]
-    if same_slopes[0] == same_slopes[1] or same_slopes[0] == scale_direction(same_slopes[1], -1):
-        print(f"parallel: {stone_choices}")
-
