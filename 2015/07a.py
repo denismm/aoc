@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 import sys
 import re
-from typing import NamedTuple
+from typing import NamedTuple, Optional
 
 instruction_re = re.compile(r'([\da-z]*)\s*([A-Z]*)\s*([\da-z]*)')
 
+b_override: Optional[str] = None
+
 filename = sys.argv[1]
+if len(sys.argv) > 2:
+    b_override = sys.argv[2]
 Instruction = NamedTuple('Instruction', [('operator', str), ('inputs', tuple[str, ...])])
 feeders: dict[str, Instruction] = {}
 
@@ -17,6 +21,9 @@ with open(filename, 'r') as f:
         if not m:
             raise ValueError(command)
         (a, operator, b) = m.groups()
+        if target == 'b' and b_override is not None:
+            print(f"overriding b on {line}")
+            a = b_override
         feeders[target] = Instruction(operator, (a, b))
 
 registers: dict[str, int] = {}
