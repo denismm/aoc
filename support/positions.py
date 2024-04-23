@@ -20,6 +20,20 @@ def read_set_grid(f: TextIOBase) -> tuple[int, int, SetGrid]:
     height = y
     return width, height, grid
 
+def read_char_grid(f: TextIOBase, skip_dots: bool = True) -> tuple[int, int, StrGrid]:
+    width = 0
+    height = 0
+    grid: StrGrid = {}
+    for y, line in enumerate(f):
+        line = line.rstrip()
+        if not width:
+            size = len(line)
+        for x, char in enumerate(line):
+            if char != '.':
+                grid[(x, y)] = char
+    height = y
+    return width, height, grid
+
 FloatDirection = tuple[float, ...]
 
 cardinal_directions: tuple[Direction, ...] = ((1, 0), (0, 1), (-1, 0), (0, -1))

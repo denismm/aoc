@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
 import sys
-from positions import Position, zeta_directions, add_direction
+from positions import Position, zeta_directions, add_direction, read_char_grid
 
 filename = sys.argv[1]
 grid: dict[Position, str] = {}
 with open(filename, 'r') as f:
-    for y, line in enumerate(f):
-        for x, character in enumerate(line.rstrip()):
-            if character != '.':
-                grid[(x, y)] = character
+    _, _, grid = read_char_grid(f)
 symbol_locations = [k for k, v in grid.items() if not v.isdigit()]
 total = 0
 ratio_total = 0
