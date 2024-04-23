@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys
-from positions import Position, zeta_directions, add_direction
+from positions import Position, zeta_directions, add_direction, read_set_grid
 
 filename = sys.argv[1]
 generations: int = int(sys.argv[2])
@@ -8,13 +8,7 @@ lit: set[Position] = set()
 size: int = 0   # assertion: dealing with squares
 
 with open(filename, 'r') as f:
-    for y, line in enumerate(f):
-        line = line.rstrip()
-        if not size:
-            size = len(line)
-        for x, char in enumerate(line):
-            if char == '#':
-                lit.add((x, y))
+    size, _, lit = read_set_grid(f)
 
 for i in range(generations):
     new_lit: set[Position] = set()

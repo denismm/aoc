@@ -1,5 +1,24 @@
+from io import TextIOBase
+
 Position = tuple[int, ...]
 Direction = Position
+
+SetGrid = set[Position]
+StrGrid = dict[Position, str]
+
+def read_set_grid(f: TextIOBase) -> tuple[int, int, SetGrid]:
+    width = 0
+    height = 0
+    grid: SetGrid = set()
+    for y, line in enumerate(f):
+        line = line.rstrip()
+        if not width:
+            size = len(line)
+        for x, char in enumerate(line):
+            if char == '#':
+                grid.add((x, y))
+    height = y
+    return width, height, grid
 
 FloatDirection = tuple[float, ...]
 
