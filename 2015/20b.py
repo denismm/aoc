@@ -4,6 +4,7 @@ from math import sqrt, ceil
 
 present_target = int(sys.argv[1])
 
+
 def find_elves(n: int) -> set[int]:
     all_elves: set[int] = set()
     # lazy for now
@@ -17,6 +18,7 @@ def find_elves(n: int) -> set[int]:
             if candidate <= 50:
                 all_elves.add(n // candidate)
     return all_elves
+
 
 n = 1
 report = 10

@@ -20,5 +20,5 @@ for rep in range(repetitions):
         i += j
     output = buffer
 if len(output) < 20:
-    print(''.join(output))
+    print("".join(output))
 print(len(output))

@@ -5,9 +5,9 @@ from positions import Position, zeta_directions, add_direction, read_set_grid
 filename = sys.argv[1]
 generations: int = int(sys.argv[2])
 lit: set[Position] = set()
-size: int = 0   # assertion: dealing with squares
+size: int = 0  # assertion: dealing with squares
 
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     size, _, lit = read_set_grid(f)
 
 for i in range(generations):

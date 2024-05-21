@@ -3,17 +3,19 @@ import sys
 from collections import Counter
 from typing import Optional
 import math
+
 filename = sys.argv[1]
 target_amount = int(sys.argv[2])
 
 containers: Counter[int] = Counter()
 
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         container_size = int(line)
         containers[container_size] += 1
 
 size_list = sorted(containers.keys())
+
 
 def min_combos(start_i: int, capacity_so_far: int) -> Optional[int]:
     if start_i >= len(size_list):
@@ -36,7 +38,9 @@ def min_combos(start_i: int, capacity_so_far: int) -> Optional[int]:
                 result = new_result
     return result
 
-min_count = int(min_combos(0, 0))       # type: ignore [arg-type]
+
+min_count = int(min_combos(0, 0))  # type: ignore [arg-type]
+
 
 def combos(start_i: int, capacity_so_far: int, count_limit: int) -> int:
     # print(f"{start_i=} {capacity_so_far=}")
@@ -67,5 +71,6 @@ def combos(start_i: int, capacity_so_far: int, count_limit: int) -> int:
         result += multiplier * subresult
         # print (f"{multiplier=} {subresult=} {result=}")
     return result
+
 
 print(combos(0, 0, min_count))

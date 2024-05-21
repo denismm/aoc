@@ -6,18 +6,19 @@ filename = sys.argv[1]
 
 destination: str = ""
 replacements: dict[str, list[str]] = defaultdict(list)
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         line = line.rstrip()
         if len(line):
-            if ' => ' in line:
-                source, dest = line.split(' => ')
+            if " => " in line:
+                source, dest = line.split(" => ")
                 replacements[dest].append(source)
             else:
                 destination = line
 
 steps = 0
 current = destination
+
 
 def next_options(start: str) -> set[str]:
     outputs: set[str] = set()
@@ -41,7 +42,8 @@ def next_options(start: str) -> set[str]:
     print(sorted(sources))
     return outputs
 
-while current != 'e':
+
+while current != "e":
     nexts = next_options(current)
     # print(f"nexts: {len(nexts)}")
     if not nexts:

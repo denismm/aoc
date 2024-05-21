@@ -9,7 +9,7 @@ distance: dict[frozenset[str], int] = {}
 
 places: set[str] = set()
 
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         line = line.rstrip()
         tokens = line.split()

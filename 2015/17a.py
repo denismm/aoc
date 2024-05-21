@@ -2,17 +2,19 @@
 import sys
 from collections import Counter
 import math
+
 filename = sys.argv[1]
 target_amount = int(sys.argv[2])
 
 containers: Counter[int] = Counter()
 
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         container_size = int(line)
         containers[container_size] += 1
 
 size_list = sorted(containers.keys())
+
 
 def combos(start_i: int, capacity_so_far: int) -> int:
     # print(f"{start_i=} {capacity_so_far=}")
@@ -35,5 +37,6 @@ def combos(start_i: int, capacity_so_far: int) -> int:
         result += multiplier * subresult
         # print (f"{multiplier=} {subresult=} {result=}")
     return result
+
 
 print(combos(0, 0))

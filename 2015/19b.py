@@ -6,19 +6,20 @@ filename = sys.argv[1]
 
 destination: str = ""
 replacements: dict[str, list[str]] = defaultdict(list)
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         line = line.rstrip()
         if len(line):
-            if ' => ' in line:
-                source, dest = line.split(' => ')
+            if " => " in line:
+                source, dest = line.split(" => ")
                 replacements[source].append(dest)
             else:
                 destination = line
 
 steps = 0
-frontier: set[str] = {'e'}
-seen: set[str] = {'e'}
+frontier: set[str] = {"e"}
+seen: set[str] = {"e"}
+
 
 def next_options(start: str) -> set[str]:
     outputs: set[str] = set()
@@ -39,6 +40,7 @@ def next_options(start: str) -> set[str]:
                     outputs.add(output)
             position += 1
     return outputs
+
 
 while destination not in frontier:
     print(f"round {steps}: {len(frontier)}")

@@ -3,20 +3,22 @@ import sys
 from copy import copy
 from collections import Counter
 from itertools import product
+
 filename = sys.argv[1]
 
 Ingredient = dict[str, int]
 ingredients: dict[str, Ingredient] = {}
 
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         line.rstrip()
-        ing_name, properties = line.split(': ')
+        ing_name, properties = line.split(": ")
         scratch_ing: Ingredient = {}
-        for prop in properties.split(', '):
-            prop_name, prop_amount_s = prop.split(' ')
+        for prop in properties.split(", "):
+            prop_name, prop_amount_s = prop.split(" ")
             scratch_ing[prop_name] = int(prop_amount_s)
         ingredients[ing_name] = scratch_ing
+
 
 def score(teaspoons: dict[str, int]) -> int:
     totals: Counter[str] = Counter()
@@ -27,7 +29,7 @@ def score(teaspoons: dict[str, int]) -> int:
             # print(f"  {prop_name}: {prop_amount * amount}")
     total = 1
     # print("===")
-    for prop_name , x in totals.items():
+    for prop_name, x in totals.items():
         if prop_name == "calories":
             continue
         # print(f"{prop_name} {x}")
@@ -37,10 +39,13 @@ def score(teaspoons: dict[str, int]) -> int:
             total *= x
     return total
 
+
 # pick a starting state and search from there?
 total_tsp = 100
 ings_n = len(ingredients)
-current_amts: dict[str, int] = {ing_name: total_tsp // ings_n for ing_name in ingredients.keys()}
+current_amts: dict[str, int] = {
+    ing_name: total_tsp // ings_n for ing_name in ingredients.keys()
+}
 if sum(current_amts.values()) != total_tsp:
     raise ValueError("bad start")
 current_score = score(current_amts)

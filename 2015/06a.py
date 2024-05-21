@@ -3,11 +3,11 @@ import sys
 import re
 from positions import Position
 
-instruction_re = re.compile(r'([\w ]*) (\d+),(\d+) through (\d+),(\d+)')
+instruction_re = re.compile(r"([\w ]*) (\d+),(\d+) through (\d+),(\d+)")
 
 filename = sys.argv[1]
 lit: set[Position] = set()
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         line = line.rstrip()
         m = instruction_re.match(line)
@@ -20,11 +20,11 @@ with open(filename, 'r') as f:
         for x in range(minx, maxx + 1):
             for y in range(miny, maxy + 1):
                 point = (x, y)
-                if command == 'turn on':
+                if command == "turn on":
                     lit.add(point)
-                elif command == 'turn off':
+                elif command == "turn off":
                     lit.discard(point)
-                elif command == 'toggle':
+                elif command == "toggle":
                     if point in lit:
                         lit.discard(point)
                     else:

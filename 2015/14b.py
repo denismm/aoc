@@ -2,15 +2,17 @@
 import sys
 from typing import NamedTuple
 from collections import defaultdict
+
 filename = sys.argv[1]
 race_time = int(sys.argv[2])
 
-Reindeer = NamedTuple('Reindeer',
-    [('speed', int), ('span', int), ('rest', int), ('step', int)])
+Reindeer = NamedTuple(
+    "Reindeer", [("speed", int), ("span", int), ("rest", int), ("step", int)]
+)
 
 reindeer: dict[str, Reindeer] = {}
 
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         line = line.rstrip()
         tokens = line.split()
@@ -38,7 +40,7 @@ for sofar in range(1, race_time + 1):
             r_points[r] += 1
             winners += 1
     # if winners > 1:
-        # print(f"tie at {sofar} seconds")
+    # print(f"tie at {sofar} seconds")
 
 max_points = max(r_points.values())
 for r, points in r_points.items():

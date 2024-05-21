@@ -2,7 +2,8 @@
 import sys
 import re
 
-nice_rules = [ re.compile(rule) for rule in (r'(..).*\1', r'(.).\1')]
+nice_rules = [re.compile(rule) for rule in (r"(..).*\1", r"(.).\1")]
+
 
 def is_nice(line: str) -> bool:
     for rule in nice_rules:
@@ -13,7 +14,7 @@ def is_nice(line: str) -> bool:
 
 filename = sys.argv[1]
 nice: int = 0
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         if is_nice(line):
             nice += 1

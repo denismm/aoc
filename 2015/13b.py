@@ -10,21 +10,21 @@ distance: dict[frozenset[str], int] = defaultdict(int)
 
 places: set[str] = set()
 
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         line = line.rstrip()
-        line = line.rstrip('.')
+        line = line.rstrip(".")
         tokens = line.split()
         # Alice would gain 54 happiness units by sitting next to Bob
         # 0     1     2    3  4         5     6  7       8    9  10
         key = frozenset([tokens[0], tokens[10]])
         happiness = int(tokens[3])
-        if tokens[2] == 'lose':
+        if tokens[2] == "lose":
             happiness *= -1
         distance[key] += happiness
         places.add(tokens[0])
         places.add(tokens[10])
-    places.add('Me')
+    places.add("Me")
 
 best_distance: Optional[int] = None
 worst_distance: int = 0

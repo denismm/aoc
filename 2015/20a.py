@@ -4,6 +4,7 @@ from math import sqrt, ceil
 
 present_target = int(sys.argv[1])
 
+
 def find_factors(n: int) -> set[int]:
     all_factors: set[int] = set()
     # lazy for now
@@ -15,6 +16,7 @@ def find_factors(n: int) -> set[int]:
             all_factors.add(candidate)
             all_factors.add(n // candidate)
     return all_factors
+
 
 n = 1
 report = 10

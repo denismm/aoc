@@ -5,11 +5,13 @@ from dataclasses import dataclass, field
 from Levenshtein import distance
 from heapq import heappush, heappop, heapify
 
+
 @dataclass(order=True)
 class Molecule:
     priority: float
     steps: int = field(compare=False)
     name: str = field(compare=False)
+
 
 class PriorityQueue:
     def __init__(self) -> None:
@@ -26,18 +28,19 @@ class PriorityQueue:
         entry: Molecule = heappop(self.entries)
         del self.finder[entry.name]
         return entry
-        
+
+
 filename = sys.argv[1]
 
 destination: str = ""
 origin: str = "e"
 replacements: dict[str, list[str]] = defaultdict(list)
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         line = line.rstrip()
         if len(line):
-            if ' => ' in line:
-                source, dest = line.split(' => ')
+            if " => " in line:
+                source, dest = line.split(" => ")
                 replacements[source].append(dest)
             else:
                 destination = line
@@ -45,6 +48,7 @@ with open(filename, 'r') as f:
 frontier: PriorityQueue = PriorityQueue()
 frontier.put(Molecule(0.0, 0, origin))
 seen: set[str] = {origin}
+
 
 def next_options(start: str) -> set[str]:
     outputs: set[str] = set()
@@ -66,8 +70,9 @@ def next_options(start: str) -> set[str]:
             position += 1
     return outputs
 
+
 coefficient: float = 0.1
-print (f"target is {destination}")
+print(f"target is {destination}")
 while frontier:
     current = frontier.get()
     # print(f"got {current=}")
@@ -76,7 +81,7 @@ while frontier:
         # print(f"checking {next}")
         steps = current.steps + 1
         if next == destination:
-            print (steps)
+            print(steps)
             exit(0)
         priority = current.steps + coefficient * distance(next, destination)
         # print(f"putting {priority}, {steps}, {next}")

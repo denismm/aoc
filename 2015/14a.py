@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 import sys
 from typing import NamedTuple
+
 filename = sys.argv[1]
 race_time = int(sys.argv[2])
 
-Reindeer = NamedTuple('Reindeer', [('speed', int), ('span', int), ('rest', int)])
+Reindeer = NamedTuple("Reindeer", [("speed", int), ("span", int), ("rest", int)])
 
 reindeer: dict[str, Reindeer] = {}
 
-with open(filename, 'r') as f:
+with open(filename, "r") as f:
     for line in f:
         line = line.rstrip()
         tokens = line.split()
@@ -30,4 +31,4 @@ for r, spec in reindeer.items():
         best_distance = distance
         best_reindeer = r
 
-print( best_reindeer, best_distance)
+print(best_reindeer, best_distance)
