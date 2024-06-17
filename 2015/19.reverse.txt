@@ -1,6 +1,11 @@
 BCa => B
 BF => Mg
 BP => Ti
+TiB => B
+TiMg => Mg
+TiRnFAr => B
+TiTi => Ti
+
 CRnAlAr => H
 CRnFAr => N
 CRnFYFAr => O
@@ -8,10 +13,6 @@ CRnFYFYFAr => H
 CRnFYMgAr => H
 CRnMgAr => O
 CRnMgYFAr => H
-CaCa => Ca
-CaF => F
-CaP => P
-CaSi => Si
 HCa => H
 HF => e
 HP => O
@@ -25,6 +26,11 @@ OB => H
 OMg => e
 ORnFAr => H
 OTi => O
+
+CaCa => Ca
+CaF => F
+CaP => P
+CaSi => Si
 PB => Ca
 PMg => F
 PRnFAr => Ca
@@ -34,12 +40,9 @@ SiRnFAr => P
 SiRnFYFAr => Ca
 SiRnMgAr => Ca
 SiTh => Ca
+
 ThCa => Th
 ThF => Al
 ThRnFAr => Al
-TiB => B
-TiMg => Mg
-TiRnFAr => B
-TiTi => Ti
 
 CRnSiRnCaPTiMgYCaPTiRnFArSiThFArCaSiThSiThPBCaCaSiRnSiRnTiTiMgArPBCaPMgYPTiRnFArFArCaSiRnBPMgArPRnCaPTiRnFArCaSiThCaCaFArPBCaCaPTiTiRnFArCaSiRnSiAlYSiThRnFArArCaSiRnBFArCaCaSiRnSiThCaCaCaFYCaPTiBCaSiThCaSiThPMgArSiRnCaPBFYCaCaFArCaCaCaCaSiThCaSiRnPRnFArPBSiThPRnFArSiRnMgArCaFYFArCaSiRnSiAlArTiTiTiTiTiTiTiRnPMgArPTiTiTiBSiRnSiAlArTiTiRnPMgArCaFYBPBPTiRnSiRnMgArSiThCaFArCaSiThFArPRnFArCaSiRnTiBSiThSiRnSiAlYCaFArPRnFArSiThCaFArCaCaSiThCaCaCaSiRnPRnCaFArFYPMgArCaPBCaPBSiRnFYPBCaFArCaSiAl
