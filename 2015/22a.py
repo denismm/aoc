@@ -3,7 +3,9 @@ from dataclasses import dataclass
 from typing import Optional
 from enum import StrEnum
 from copy import deepcopy
-from heapq import merge
+from heapq import heapify, heappush, heappop
+
+hard_mode = True
 
 @dataclass
 class Player:
@@ -101,6 +103,9 @@ def apply_effects( state: State ) -> None:
 
 def event_loop(state: State, spell: Spell) -> Optional[bool]:
     try:
+        if hard_mode:
+            state.player.hp -= 1
+            deathcheck(state)
         # effects happen
         apply_effects(state)
         # player casts
@@ -130,11 +135,12 @@ def solve_state(start_state: State, check_list: SpellList = []) -> int:
     current_stems: list[PricedNextState] = [
         (cost, spell, start_state.clone()) for spell, cost in costs.items()
     ]
+    heapify(current_stems)
 
     tries = 0
     threshold = 1
     while True:
-        head: PricedNextState = current_stems.pop(0)
+        head: PricedNextState = heappop(current_stems)
         spent, spell, state = head
 
         tries += 1
@@ -151,10 +157,9 @@ def solve_state(start_state: State, check_list: SpellList = []) -> int:
         if result is False:
             # no further spells can save you
             continue
-        new_stems: list[PricedNextState] = []
         for next_spell, cost in costs.items():
-            new_stems.append((spent + cost, next_spell, state.clone()))
-        current_stems = list(merge(current_stems, new_stems))
+            new_stem = (spent + cost, next_spell, state.clone())
+            heappush(current_stems, new_stem)
 
 
 def tests() -> None:
