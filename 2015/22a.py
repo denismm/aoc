@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 from dataclasses import dataclass
-from typing import Optional, Iterable
+from typing import Optional
 from enum import StrEnum
 from copy import deepcopy
+from heapq import merge
 
 @dataclass
 class Player:
@@ -14,7 +15,6 @@ class Player:
 Spell = StrEnum("Spell", ["MagicMissile", "Drain", "Shield", "Poison", "Recharge"])
 
 SpellList = list[Spell]
-PricedSpellList = tuple[int, SpellList]
 
 costs: dict[Spell, int] = {
     Spell.MagicMissile: 53,
@@ -38,9 +38,23 @@ class State:
     boss: Player
     effects: Effects
     spent: int = 0
+    spells_so_far: Optional[list[Spell]] = None
 
     def clone(self) -> 'State':
         return deepcopy(self)
+
+    def __lt__(self, other: "State") -> bool:
+        return (self.spent, self.player.hp, self.boss.hp) < (other.spent, other.player.hp, other.boss.hp)
+
+    def add_spell(self, spell: Spell) -> None:
+        if self.spells_so_far is None:
+            self.spells_so_far = []
+        cost = costs[spell]
+        self.spent += cost
+        self.player.mana -= cost
+        self.spells_so_far.append(spell)
+
+PricedNextState = tuple[int, Spell, State]
 
 class PlayerDeath(Exception):
     pass
@@ -58,8 +72,7 @@ def deathcheck(state: State) -> None:
 
 # note - all apply functions mutate state
 def apply_spell( state: State, spell: Spell) -> None:
-    state.player.mana -= costs[spell]
-    state.spent += costs[spell]
+    state.add_spell(spell)
     if spell is Spell.MagicMissile:
         state.boss.hp -= 4
     elif spell is Spell.Drain:
@@ -113,38 +126,36 @@ def combat(state: State, spell_list: SpellList) -> Optional[bool]:
             return result
     return result
 
-def all_spell_lists() -> Iterable[PricedSpellList]:
-    current_stems: list[PricedSpellList] = [
-        (cost, [spell]) for spell, cost in costs.items()
+def solve_state(start_state: State, check_list: SpellList = []) -> int:
+    current_stems: list[PricedNextState] = [
+        (cost, spell, start_state.clone()) for spell, cost in costs.items()
     ]
-    current_stems.sort()
 
-    while True:
-        head: PricedSpellList = current_stems.pop(0)
-        for spell, cost in costs.items():
-            current_stems.append((head[0] + cost, head[1] + [spell]))
-        current_stems.sort()
-        yield head
-
-def test_iterator() -> None:
-    for i, priced_spell_list in zip(range(20), all_spell_lists()):
-        print(priced_spell_list)
-
-# test_iterator()
-
-def solve_state(start_state: State) -> None:
     tries = 0
     threshold = 1
-    for priced_spell_list in all_spell_lists():
-        cost, spell_list = priced_spell_list
-        state = start_state.clone()
-        if combat(state, spell_list):
-            print(cost, state.spent)
-            return
+    while True:
+        head: PricedNextState = current_stems.pop(0)
+        spent, spell, state = head
+
         tries += 1
         if tries == threshold:
-            print(f"# {tries=}, {cost=}, {len(spell_list)=}")
+            print(f"# {tries=}, {spent=}, {len(current_stems)=}")
             threshold *= 10
+
+        result = event_loop(state, spell)
+        if check_list and state.spells_so_far and check_list[:len(state.spells_so_far)] == state.spells_so_far:
+            print(state.spells_so_far, result)
+        if result is True:
+            print(f"success at try {tries}")
+            return spent
+        if result is False:
+            # no further spells can save you
+            continue
+        new_stems: list[PricedNextState] = []
+        for next_spell, cost in costs.items():
+            new_stems.append((spent + cost, next_spell, state.clone()))
+        current_stems = list(merge(current_stems, new_stems))
+
 
 def tests() -> None:
     test_state = State(
@@ -157,7 +168,7 @@ def tests() -> None:
 
     print(combat(test_state, spell_list))
     print(test_state.spent)
-    solve_state(backup)
+    print(solve_state(backup, spell_list))
 
     test_state = State(
         Player(10, 0, 0, 250),
@@ -169,9 +180,10 @@ def tests() -> None:
 
     print(combat(test_state, spell_list))
     print(test_state.spent)
-    solve_state(backup)
+    print(solve_state(backup, spell_list))
 
-tests()
+# tests()
+# exit(0)
 
 input_state = State(
     Player(50, 0, 0, 500),
@@ -179,4 +191,4 @@ input_state = State(
     {}
     )
 
-solve_state(input_state)
+print(solve_state(input_state))
