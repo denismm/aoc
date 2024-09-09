@@ -1,0 +1,48 @@
+BCa => B
+BF => Mg
+BP => Ti
+TiB => B
+TiMg => Mg
+Ti!FAr => B
+TiTi => Ti
+
+.!AlAr => H
+.!FAr => N
+.!FYFAr => O
+.!FYFYFAr => H
+.!FYMgAr => H
+.!MgAr => O
+.!MgYFAr => H
+HCa => H
+HF => e
+HP => O
+HSi => N
+NAl => e
+N!FAr => O
+N!FYFAr => H
+N!MgAr => H
+NTh => H
+OB => H
+OMg => e
+O!FAr => H
+OTi => O
+
+CaCa => Ca
+CaF => F
+CaP => P
+CaSi => Si
+PB => Ca
+PMg => F
+P!FAr => Ca
+PTi => P
+SiAl => F
+Si!FAr => P
+Si!FYFAr => Ca
+Si!MgAr => Ca
+SiTh => Ca
+
+ThCa => Th
+ThF => Al
+Th!FAr => Al
+
+.!Si!CaPTiMgYCaPTi!FArSiThFArCaSiThSiThPBCaCaSi!Si!TiTiMgArPBCaPMgYPTi!FArFArCaSi!BPMgArP!CaPTi!FArCaSiThCaCaFArPBCaCaPTiTi!FArCaSi!SiAlYSiTh!FArArCaSi!BFArCaCaSi!SiThCaCaCaFYCaPTiBCaSiThCaSiThPMgArSi!CaPBFYCaCaFArCaCaCaCaSiThCaSi!P!FArPBSiThP!FArSi!MgArCaFYFArCaSi!SiAlArTiTiTiTiTiTiTi!PMgArPTiTiTiBSi!SiAlArTiTi!PMgArCaFYBPBPTi!Si!MgArSiThCaFArCaSiThFArP!FArCaSi!TiBSiThSi!SiAlYCaFArP!FArSiThCaFArCaCaSiThCaCaCaSi!P!CaFArFYPMgArCaPBCaPBSi!FYPBCaFArCaSiAl
