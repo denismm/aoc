@@ -1,3 +1,5 @@
 .*swp
+bin
+lib
 __pycache__
 dmmlib
