@@ -5,7 +5,7 @@ Direction = Position
 
 SetGrid = set[Position]
 StrGrid = dict[Position, str]
-
+FrozenSetGrid = frozenset[Position]
 
 def read_set_grid(f: TextIOBase) -> tuple[int, int, SetGrid]:
     width = 0
