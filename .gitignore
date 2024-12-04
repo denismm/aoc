@@ -3,3 +3,6 @@ bin
 lib
 __pycache__
 dmmlib
+*.input.txt
+*.test
+.DS_Store
