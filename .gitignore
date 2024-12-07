@@ -3,6 +3,7 @@ bin
 lib
 __pycache__
 dmmlib
-*.input.txt
-*.test
+*.input*
+*.test*
 .DS_Store
+pyvenv.cfg
