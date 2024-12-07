@@ -31,8 +31,9 @@ def read_char_grid(f: TextIOBase, skip_dots: bool = True) -> tuple[int, int, Str
         if not width:
             size = len(line)
         for x, char in enumerate(line):
-            if char != ".":
-                grid[(x, y)] = char
+            if skip_dots and char == ".":
+                continue
+            grid[(x, y)] = char
     height = y
     return width, height, grid
 
