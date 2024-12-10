@@ -9,16 +9,22 @@ with open(filename, "r") as f:
 trailheads = [k for k, v in map.items() if v == '0']
 
 total_score = 0
+total_rating = 0
+
+Path = list[Position]
 
 for th in trailheads:
-    locations: set[Position] = {th}
+    paths: list[Path] = [[th]]
     for altitude in "123456789":
-        new_locations: set[Position] = set()
-        for location in locations:
+        new_paths: list[Path] = []
+        for path in paths:
             for dir in cardinal_directions:
-                step = add_direction(location, dir)
+                step = add_direction(path[-1], dir)
                 if step in map and map[step] == altitude:
-                    new_locations.add(step)
-        locations = new_locations
+                    new_paths.append(path + [step])
+        paths = new_paths
+    total_rating += len(paths)
+    locations: set[Position] = { p[-1] for p in paths }
     total_score += len(locations)
 print(total_score)
+print(total_rating)
