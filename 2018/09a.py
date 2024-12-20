@@ -21,5 +21,8 @@ for marble in range(1, last_marble + 1):
         current = new_pos
     current_player = (current_player + 1) % player_count
 
+    if marble % 10_000 == 0:
+        print(marble // 10_000, end=" ", flush=True)
+
 print(max(scores))
 
