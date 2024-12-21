@@ -1,4 +1,5 @@
 from io import TextIOBase
+from typing import Optional
 
 Position = tuple[int, ...]
 Direction = Position
@@ -7,12 +8,15 @@ SetGrid = set[Position]
 StrGrid = dict[Position, str]
 FrozenSetGrid = frozenset[Position]
 
+
 def read_set_grid(f: TextIOBase) -> tuple[int, int, SetGrid]:
     width = 0
     height = 0
     grid: SetGrid = set()
     for y, line in enumerate(f):
         line = line.rstrip()
+        if line == "":
+            break
         if not width:
             size = len(line)
         for x, char in enumerate(line):
@@ -22,12 +26,20 @@ def read_set_grid(f: TextIOBase) -> tuple[int, int, SetGrid]:
     return width, height, grid
 
 
-def read_char_grid(f: TextIOBase, skip_dots: bool = True) -> tuple[int, int, StrGrid]:
+def read_char_grid(
+    f: TextIOBase,
+    skip_dots: bool = True,
+    transformation: Optional[dict[str, str]] = None,
+) -> tuple[int, int, StrGrid]:
     width = 0
     height = 0
     grid: StrGrid = {}
     for y, line in enumerate(f):
         line = line.rstrip()
+        if line == "":
+            break
+        if transformation is not None:
+            line = ''.join([transformation.get(c, c) for c in line])
         if not width:
             size = len(line)
         for x, char in enumerate(line):
