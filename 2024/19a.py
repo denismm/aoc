@@ -15,21 +15,25 @@ with open(filename, "r") as f:
             patterns.append(line)
 
 ok_count: int = 0
+option_total: int = 0
 
-doable: dict[str, bool] = {t: True for t in towels}
-def check_pattern(pattern: str) -> bool:
+doable: dict[str, int] = {"": 1}
+def check_pattern(pattern: str) -> int:
     if pattern in doable:
         return doable[pattern]
+    options: int = 0
     for t in towels:
         if pattern.startswith(t):
-            if check_pattern(pattern.removeprefix(t)):
-                doable[pattern] = True
-                return True
-    doable[pattern] = False
-    return False
+            options += check_pattern(pattern.removeprefix(t))
+    doable[pattern] = options
+    return options
 
 for pattern in patterns:
-    if check_pattern(pattern):
+    options = check_pattern(pattern)
+    if options:
         ok_count += 1
+    option_total += options
+
 
 print(ok_count)
+print(option_total)
