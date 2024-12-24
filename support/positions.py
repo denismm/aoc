@@ -18,7 +18,7 @@ def read_set_grid(f: TextIOBase) -> tuple[int, int, SetGrid]:
         if line == "":
             break
         if not width:
-            size = len(line)
+            width = len(line)
         for x, char in enumerate(line):
             if char == "#":
                 grid.add((x, y))
@@ -52,12 +52,12 @@ def read_char_grid(
         if transformation is not None:
             line = ''.join([transformation.get(c, c) for c in line])
         if not width:
-            size = len(line)
+            width = len(line)
         for x, char in enumerate(line):
             if skip_dots and char == ".":
                 continue
             grid[(x, y)] = char
-    height = y
+    height = y + 1
     return width, height, grid
 
 
