@@ -68,6 +68,7 @@ cardinal_directions: tuple[Direction, ...] = ((1, 0), (0, 1), (-1, 0), (0, -1))
 direction_symbols = ">v<^"
 udlr_symbols = "RDLU"
 direction_for_symbol = {k: v for k, v in zip(direction_symbols, cardinal_directions)}
+symbol_for_direction = {k: v for k, v in zip(cardinal_directions, direction_symbols)}
 direction_for_udlr = {k: v for k, v in zip(udlr_symbols, cardinal_directions)}
 zeta_directions: tuple[Direction, ...] = tuple(
     (x, y) for x in (-1, 0, 1) for y in (-1, 0, 1) if x or y
