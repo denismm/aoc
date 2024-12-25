@@ -22,10 +22,10 @@ keypad_strings = ["789\n456\n123\n.0A\n", ".^A\n<v>\n"]
 keypads: list[StrGrid] = [read_char_grid(StringIO(kps))[2] for kps in keypad_strings]
 dapyeks: list[dict[str, Position]] = [{v: k for k, v in kp.items()} for kp in keypads]
 
-best_transitions: dict[int, dict[tuple[str, str], list[str]]] = defaultdict(dict)
+best_transitions: dict[int, dict[tuple[str, str], int]] = defaultdict(dict)
 best_bases: dict[tuple[str, str], list[str]] = {}
 
-def presses_for_transition(level: int, start: str, end: str) -> list[str]:
+def presses_for_transition(level: int, start: str, end: str) -> int:
     key = (start, end)
     if key not in best_transitions[level]:
         # find base
@@ -60,29 +60,24 @@ def presses_for_transition(level: int, start: str, end: str) -> list[str]:
             best_bases[key] = [ t + 'A' for t in options]
         bases = best_bases[key]
         if level < levels:
-            transitions = [presses_for_sequence(level + 1, t) for t in bases]
-            # print (f"accumulated {transitions}")
+            best_len = min([presses_for_sequence(level + 1, t) for t in bases])
+            # print (f"minned {best_len}")
         else:
-            # print(f"calculated {bases}")
-            transitions = bases
-        best_len = min([len(t) for t in transitions])
-        transitions = [t for t in transitions if len(t) == best_len]
-        best_transitions[level][key] = transitions
+            best_len = min([len(t) for t in bases])
+            # print (f"calculated {best_len}")
+        best_transitions[level][key] = best_len
     return best_transitions[level][key]
 
-best_presses: dict[tuple[int, str], str] = {}
-def presses_for_sequence(level: int, sequence: str) -> str:
+best_presses: dict[tuple[int, str], int] = {}
+def presses_for_sequence(level: int, sequence: str) -> int:
     key = (level, sequence)
     # print (f"looking up {key}")
     if key not in best_presses:
         # print(f"calculating {key}")
-        presses: list[str] = []
+        presses: int = 0
         for (start, end) in zip("A" + sequence, sequence):
-            possible_presses = presses_for_transition(level, start, end)
-            if len(set([len(p) for p in possible_presses])) > 1:
-                raise ValueError(f"too many options: {possible_presses}")
-            presses.append(possible_presses[0])
-        best_presses[key] = "".join(presses)
+            presses += presses_for_transition(level, start, end)
+        best_presses[key] = presses
     else:
         # print(f"found {key}: {best_presses[key]}")
         pass
@@ -91,7 +86,7 @@ def presses_for_sequence(level: int, sequence: str) -> str:
 total_complexity = 0
 for code in codes:
     presses = presses_for_sequence(0, code)
-    complexity = int(code[:-1]) * len(presses)
-    print(code, len(presses), complexity)
+    complexity = int(code[:-1]) * presses
+    print(code, presses, complexity)
     total_complexity += complexity
 print(total_complexity)
