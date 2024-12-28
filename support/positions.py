@@ -22,20 +22,11 @@ def read_set_grid(f: TextIOBase) -> tuple[int, int, SetGrid]:
         for x, char in enumerate(line):
             if char == "#":
                 grid.add((x, y))
-    height = y
+    if len(grid) == 0:
+        raise ValueError(f"empty grid")
+    height = y + 1
     return width, height, grid
 
-
-def print_set_grid(width: int, height: int, grid: SetGrid) -> str:
-    output: str = ""
-    for y in range(height):
-        for x in range(width):
-            s: str = '.'
-            if (x, y) in grid:
-                s = '#'
-            output += s
-        output += "\n"
-    return output
 
 def read_char_grid(
     f: TextIOBase,
@@ -57,9 +48,22 @@ def read_char_grid(
             if skip_dots and char == ".":
                 continue
             grid[(x, y)] = char
+    if len(grid) == 0:
+        raise ValueError(f"empty grid")
     height = y + 1
     return width, height, grid
 
+
+def print_set_grid(width: int, height: int, grid: SetGrid) -> str:
+    output: str = ""
+    for y in range(height):
+        for x in range(width):
+            s: str = '.'
+            if (x, y) in grid:
+                s = '#'
+            output += s
+        output += "\n"
+    return output
 
 
 FloatDirection = tuple[float, ...]
