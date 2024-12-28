@@ -1,0 +1,6 @@
+shj <-> z07 (7)
+wkb <-> tpk (16)
+z23 <-> pfn (23)
+z27 <-> kcd (27)
+
+kcd,pfn,shj,tpk,wkb,z07,z23,z27
