@@ -8,6 +8,7 @@ class Cart:
     pos: Position
     dir: Direction
     turns: int = 0
+    live: bool = True
 
     def __lt__(self, other: 'Cart') -> bool:
         return (self.pos[1], self.pos[0]) < (other.pos[1], other.pos[0])
@@ -43,18 +44,31 @@ for corner, mapping in turn_for_corner_chars.items():
     turn_for_corner[corner] = dir_mapping
 
 ticks = 0
-while True:
+first_crash: bool = False
+while len(carts) > 1:
     # put carts in order
     carts.sort()
     new_carts: list[Cart] = []
     while carts:
         cart = carts.pop(0)
+        if not cart.live:
+            continue
         cart.pos = add_direction(cart.pos, cart.dir)
         # check for collisions
         for other in carts + new_carts:
             if cart.pos == other.pos:
-                print(f"tick {ticks}: collision at {str(cart.pos).replace(' ', '')}")
-                exit(0)
+                if not first_crash:
+                    print(f"tick {ticks}: collision at {str(cart.pos).replace(' ', '')}")
+                    first_crash = True
+                # don't add it, kill the other one
+                cart.live = False
+                if other in new_carts:
+                    new_carts.remove(other)
+                else:
+                    other.live = False
+                break
+        if not cart.live:
+            continue
         track = tracks[cart.pos]
         if track in turn_for_corner:
             cart.dir = turn_for_corner[track][cart.dir]
@@ -69,3 +83,4 @@ while True:
         new_carts.append(cart)
     carts = new_carts
     ticks += 1
+print(f"tick {ticks}: one cart left at {str(carts[0].pos).replace(' ', '')}")
