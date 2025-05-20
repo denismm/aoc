@@ -5,20 +5,20 @@ from dataclasses import dataclass
 from typing import Iterable
 
 walls: StrGrid
-combatants: list['Combatant'] = []
+players: list['Player'] = []
 
 def first(positions: Iterable[Position]) -> Position:
     sorted_positions = sorted(positions, key=lambda p: (p[1], p[0]))
     return sorted_positions[0]
 
 @dataclass
-class Combatant:
+class Player:
     pos: Position
     side: str           # G or E
     attack: int = 3
     hp: int = 200
 
-    def __lt__(self, other: 'Combatant') -> bool:
+    def __lt__(self, other: 'Player') -> bool:
         return (self.pos[1], self.pos[0]) < (other.pos[1], other.pos[0])
 
     def targets(self) -> set[Position]:
@@ -27,25 +27,59 @@ class Combatant:
 
 
 filename = sys.argv[1]
+grid_width: int = 0
+grid_height: int = 0
 with open(filename, 'r') as f:
-    _, _, walls = read_char_grid(f)
+    grid_width, grid_height, walls = read_char_grid(f)
 
 for position, symbol in walls.items():
     if symbol in "GE":
-        combatant = Combatant(position, symbol)
-        combatants.append(combatant)
+        player = Player(position, symbol)
+        players.append(player)
 
-for position in [c.pos for c in combatants]:
+for position in [c.pos for c in players]:
     del walls[position]
 
 def count_sides() -> set[str]:
-    return set([c.side for c in combatants])
+    return set([c.side for c in players])
+
+def choose_enemy(enemies: list[Player]) -> Player:
+    # fewest hit points or reading order
+    hp_min: int = min([e.hp for e in enemies if e.hp > 0])
+    weaklings = [e for e in enemies if e.hp == hp_min]
+    weaklings.sort()
+    return weaklings[0]
 
 round = 0
+def draw_maze() -> None:
+    player_for_location: dict[Position, Player] = {c.pos: c for c in players }
+    print(f"Round {round}: {len(players)} players")
+    for j in range(grid_height):
+        player_report: str = ""
+        maze_report: str = ""
+        for i in range(grid_width):
+            test_pos: Position = (i, j)
+            if test_pos in player_for_location:
+                player = player_for_location[test_pos]
+                maze_report += player.side
+                player_report += f"{player.side}({player.hp}) "
+            elif test_pos in walls:
+                maze_report += "#"
+            else:
+                maze_report += "."
+        print(f"{maze_report} {player_report}")
+
+
+debug_maze: bool = False
+debug_finale: bool = False
+debug_decisions: bool = False
+early_exit: bool = False
 while len(count_sides()) > 1:
-    combatants.sort()
-    for c in combatants:
-        # skip dead combatants
+    players.sort()
+    if debug_maze:
+        draw_maze()
+    for c in players:
+        # skip dead players
         if c.hp <= 0:
             continue
 
@@ -53,7 +87,7 @@ while len(count_sides()) > 1:
         enemy_locations: set[Position] = set()
         friend_locations: set[Position] = set()
         enemy_targets: set[Position] = set()
-        for e in combatants:
+        for e in players:
             if e == c:
                 continue
             if e.hp <= 0:
@@ -63,7 +97,9 @@ while len(count_sides()) > 1:
             if e.side != c.side:
                 enemy_targets |= e.targets()
                 enemy_locations.add(e.pos)
-        combatant_locations = enemy_locations | friend_locations
+        player_locations = enemy_locations | friend_locations
+        if not enemy_locations:
+            early_exit = True
 
         # move if not in melee
         if c.pos not in enemy_targets:
@@ -78,7 +114,7 @@ while len(count_sides()) > 1:
                 for p in frontier:
                     for d in cardinal_directions:
                         np = add_direction(p, d)
-                        if np in walls or np in steps_to_point:
+                        if np in walls or np in steps_to_point or np in player_locations:
                             continue
                         steps_to_point[np] = steps
                         if np in enemy_targets:
@@ -87,7 +123,7 @@ while len(count_sides()) > 1:
                             new_frontier.add(np)
                 frontier = new_frontier
             if not possible_targets:
-                # no target, skip combatant
+                # no target, skip player
                 continue
             # find best target
             target = first(possible_targets)
@@ -104,16 +140,24 @@ while len(count_sides()) > 1:
                 steps -= 1
                 back_frontier = new_frontier
             best_step = first(back_frontier)
-            print(c.side, best_step)
+            if debug_decisions:
+                print(f"{round}: Step decision: {c.side} at {c.pos}, going to {best_step}")
             c.pos = best_step
 
         # attack if in melee
         if c.pos in enemy_targets:
             local_targets = c.targets() & enemy_locations
-            chosen_target = first(local_targets)
-            enemy: Combatant = [e for e in combatants if e.pos == chosen_target][0]
-            print(round, c.side, enemy)
+            local_enemies = [e for e in players if e.pos in local_targets]
+            enemy: Player = choose_enemy(local_enemies)
+            if debug_decisions:
+                print(f"{round}: {c.side} at {c.pos} attacking {enemy}")
             enemy.hp -= c.attack
     round += 1
-    combatants = [c for c in combatants if c.hp > 0]
-    print(round, combatants)
+    players = [c for c in players if c.hp > 0]
+
+if early_exit:
+    round -= 1
+if debug_finale:
+    draw_maze()
+hp_sum: int = sum([c.hp for c in players])
+print(round, hp_sum, round * hp_sum)
