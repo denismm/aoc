@@ -55,25 +55,26 @@ def draw_maze() -> None:
     player_for_location: dict[Position, Player] = {c.pos: c for c in players }
     print(f"Round {round}: {len(players)} players")
     for j in range(grid_height):
-        player_report: str = ""
+        player_report: list[str] = []
         maze_report: str = ""
         for i in range(grid_width):
             test_pos: Position = (i, j)
             if test_pos in player_for_location:
                 player = player_for_location[test_pos]
                 maze_report += player.side
-                player_report += f"{player.side}({player.hp}) "
+                player_report.append(f"{player.side}({player.hp})")
             elif test_pos in walls:
                 maze_report += "#"
             else:
                 maze_report += "."
-        print(f"{maze_report} {player_report}")
+        print(f"{maze_report}   {", ".join(player_report)}")
 
 
 debug_maze: bool = False
 debug_finale: bool = False
 debug_decisions: bool = False
 early_exit: bool = False
+# print("Day 15\n")
 while len(count_sides()) > 1:
     players.sort()
     if debug_maze:
