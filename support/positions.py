@@ -66,6 +66,19 @@ def print_set_grid(width: int, height: int, grid: SetGrid) -> str:
     return output
 
 
+def print_char_grid(width: int, height: int, grid: StrGrid) -> str:
+    output: str = ""
+    for y in range(height):
+        for x in range(width):
+            position = (x, y)
+            s: str = '.'
+            if position in grid:
+                s = grid[position]
+            output += s
+        output += "\n"
+    return output
+
+
 FloatDirection = tuple[float, ...]
 
 cardinal_directions: tuple[Direction, ...] = ((1, 0), (0, 1), (-1, 0), (0, -1))
