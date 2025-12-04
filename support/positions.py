@@ -9,7 +9,7 @@ StrGrid = dict[Position, str]
 FrozenSetGrid = frozenset[Position]
 
 
-def read_set_grid(f: TextIOBase) -> tuple[int, int, SetGrid]:
+def read_set_grid(f: TextIOBase, symbol: str = '#') -> tuple[int, int, SetGrid]:
     width = 0
     height = 0
     grid: SetGrid = set()
@@ -20,10 +20,10 @@ def read_set_grid(f: TextIOBase) -> tuple[int, int, SetGrid]:
         if not width:
             width = len(line)
         for x, char in enumerate(line):
-            if char == "#":
+            if char == symbol:
                 grid.add((x, y))
     if len(grid) == 0:
-        raise ValueError(f"empty grid")
+        raise ValueError("empty grid")
     height = y + 1
     return width, height, grid
 
@@ -49,7 +49,7 @@ def read_char_grid(
                 continue
             grid[(x, y)] = char
     if len(grid) == 0:
-        raise ValueError(f"empty grid")
+        raise ValueError("empty grid")
     height = y + 1
     return width, height, grid
 
