@@ -1,5 +1,6 @@
 from io import TextIOBase
 from typing import Optional
+from math import sqrt
 
 Position = tuple[int, ...]
 Direction = Position
@@ -108,3 +109,6 @@ def get_direction(source: Position, target: Position) -> Direction:
 
 def manhattan(source: Position, target: Position) -> int:
     return sum([abs(s - t) for s, t in zip(source, target)])
+
+def euclidean(source: Position, target: Position) -> float:
+    return sqrt(sum([(s - t) ** 2 for s, t in zip(source, target)]))
