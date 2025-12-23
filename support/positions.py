@@ -1,5 +1,5 @@
 from io import TextIOBase
-from typing import Optional
+from typing import Optional, Iterable
 from math import sqrt
 
 Position = tuple[int, ...]
@@ -8,7 +8,9 @@ Direction = Position
 SetGrid = set[Position]
 StrGrid = dict[Position, str]
 FrozenSetGrid = frozenset[Position]
+AnySetGrid = Iterable[Position]
 
+# grid operations
 
 def read_set_grid(f: TextIOBase, symbol: str = '#') -> tuple[int, int, SetGrid]:
     width = 0
@@ -55,7 +57,7 @@ def read_char_grid(
     return width, height, grid
 
 
-def print_set_grid(width: int, height: int, grid: SetGrid) -> str:
+def print_set_grid(width: int, height: int, grid: AnySetGrid) -> str:
     output: str = ""
     for y in range(height):
         for x in range(width):
@@ -79,6 +81,29 @@ def print_char_grid(width: int, height: int, grid: StrGrid) -> str:
         output += "\n"
     return output
 
+def translate_set_grid(grid: AnySetGrid, direction: Direction) -> SetGrid:
+    return { add_direction(p, direction) for p in grid }
+
+# realign grid to have nw corner at 0,0
+def corner_set_grid(grid: AnySetGrid) -> SetGrid:
+    dx = -1 * min([p[0] for p in grid])
+    dy = -1 * min([p[1] for p in grid])
+    direction = (dx, dy)
+    return translate_set_grid( grid, direction)
+
+# flip horizontally about x = 0
+def flip_set_grid(grid: AnySetGrid) -> SetGrid:
+    return { (-x, y) for (x, y) in grid }
+
+# rotate 180 degrees around 0,0
+def spin_set_grid(grid: AnySetGrid) -> SetGrid:
+    return { (-x, -y) for (x, y) in grid }
+
+# rotate 90 degrees clockwise around 0,0
+def rotate_set_grid(grid: AnySetGrid) -> SetGrid:
+    return { (-y, x) for (x, y) in grid }
+
+# direction operations
 
 FloatDirection = tuple[float, ...]
 
