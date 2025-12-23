@@ -98,6 +98,10 @@ def simple_fit_presents(tree: Tree, grid_so_far: SetGrid, last_offset: Position,
     used = 0
     for present in tree.present_list:
         used += len(presents[present])
+    nines = (tree.size[0] // 3) * (tree.size[1] // 3)
+    print (available - used, nines - len(tree.present_list))
+    if (available - used) * (nines - len(tree.present_list)) < 0:
+        raise ValueError('tight fit')
     return used <= available
 
 successes = 0
