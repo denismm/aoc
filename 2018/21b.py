@@ -114,9 +114,8 @@ def process_opcode( state: State, program: list[Instruction]) -> None:
     state.registers[c] = result
     state.ip = state.registers[state.binding]
     state.ip += 1
-    if state.ip >= 28:
-        print(state.registers)
-        exit(0)
+    if state.ip == 29:
+        print(state.registers[5])
 
 program: list[Instruction] = []
 
@@ -140,31 +139,30 @@ with open(filename, "r") as f:
     # print(f"{i};{cmd.pretty_print()}")
 # exit(0)
 
-states: list[State] = [State(0, binding, RegisterSet([sr, 0, 0, 0, 0, 0])) for sr in (2, 65537)]
+state: State = State(0, binding, RegisterSet([0, 0, 0, 0, 0, 0]))
 
 # Finally, process code
 if debug:
-    print(states)
+    print(state)
 op_count = 0
-# seen_state: set[FrozenState] = {state.frozen()}
+seen_state: set[FrozenState] = {state.frozen()}
 try:
-    while states[0].ip < len(program):
+    while state.ip < len(program):
         if debug:
             print(">>> ", program[states[0].ip])
-        for state in states:
-            process_opcode(state, program)
+        process_opcode(state, program)
         op_count += 1
-        if op_count >= 1000000:
-            raise InfiniteLoop()
-        if debug:
-            print(op_count, states)
-        # if state.frozen() in seen_state:
+        # if op_count >= 1000000:
             # raise InfiniteLoop()
-        # seen_state.add(state.frozen())
-        if states[0].registers[1:] != states[1].registers[1:]:
-            print("difference")
-            exit(1)
+        if debug:
+            print(op_count, state)
+        if state.frozen() in seen_state:
+            raise InfiniteLoop()
+        seen_state.add(state.frozen())
     # print(f"start {start_register} finished in {op_count} operations")
+    print("safe exit")
 except InfiniteLoop:
-    pass
+    print(f"infinite loop found")
+    exit(0)
+
     # print(f"start {start_register} hit an infinite loop at {op_count}")
