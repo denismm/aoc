@@ -124,6 +124,14 @@ def add_direction(position: Position, dir: Direction) -> Position:
     return tuple([p + d for p, d in zip(position, dir)])
 
 
+def scale_position(pos: Position, scale: int) -> Position:
+    return tuple(p * scale for p in pos)
+
+
+def div_position(pos: Position, divisor: int) -> Position:
+    return tuple(p // divisor for p in pos)
+
+
 def scale_direction(dir: Direction, scale: int) -> Direction:
     return tuple(d * scale for d in dir)
 
