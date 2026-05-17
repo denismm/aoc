@@ -44,7 +44,7 @@ def substitute(m: re.Match[str]) -> str:
 element_re = re.compile(r'[A-Z][a-z]?')
 
 replacements: dict[str, list[Molecule]] = defaultdict(list)
-molecule: Molecule = ()
+start_molecule: Molecule = ()
 
 def join(molecule: Molecule) -> str:
     return " ".join(molecule)
@@ -61,7 +61,7 @@ with open(filename, 'r') as f:
                 fulldest = dest.split()
                 replacements[source].append(tuple(fulldest))
             else:
-                molecule = tuple(line.split())
+                start_molecule = tuple(line.split())
 
 contraction: dict[Molecule, str] = {}
 for source, dests in replacements.items():
@@ -74,9 +74,9 @@ for orig_atom, new_atom in substitutions.items():
 if len(sys.argv) > 2:
     submol_start = int(sys.argv[2])
     submol_end = int(sys.argv[3])
-    molecule = molecule[submol_start:submol_end]
+    start_molecule = start_molecule[submol_start:submol_end]
 
-print(join(molecule))
+print(join(start_molecule))
 
 def find_zone(mol: Molecule) -> Optional[Target]:
     # Try to find smallest section of 2 or more atoms bound by terminals
@@ -189,13 +189,14 @@ def check_target(target_struct: Target) -> tuple[ bool, str ]:
     return target_cache[lookup]
 
 State = tuple[int, Molecule]   # steps and molecule
-stack: list[State] = [ (0, molecule) ]
-seen: set[Molecule] = { molecule }
+stack: list[State] = [ (0, start_molecule) ]
+seen: set[Molecule] = { start_molecule }
 # should be no way to reach same state with different step count
 
-smallest_length = len(molecule)
+smallest_length = len(start_molecule)
 
 while stack:
+    print(len(stack))
     steps, molecule = stack.pop()
     if len(molecule) < smallest_length:
         print(f"{steps}: {len(molecule)} {join(molecule)}")
@@ -235,13 +236,8 @@ while stack:
             stack.append( (steps + 1, new_molecule) )
             seen.add(new_molecule)
     else:
-        if False and end_at - start_at > len(molecule) / 2:
-            print(join(molecule))
-            print(len(possibilities))
-            exit(0)
         # if we got here we have possibilities
-        if len(possibilities) > 10 and False:
-            print(f"adding {len(possibilities)}, constrained to {join(zone_atoms)} at {start_at}:{end_at} of {len(molecule)} <{join(molecule[start_at - 1:end_at + 1])}>")
+        print(f"adding {len(possibilities)}, constrained to {join(zone_atoms)} at {start_at}:{end_at} of {len(molecule)} <{join(molecule[start_at - 1:end_at + 1])}>")
         for possibility in possibilities:
             target_struct, source = possibility
             new_molecule = apply_change(molecule, source, target_struct)
