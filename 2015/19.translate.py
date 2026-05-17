@@ -151,8 +151,40 @@ def apply_change(molecule: list[str], source: str, target_struct: Target) -> lis
     # print(f"{start}: {join(target)} => {source} : {join(new_molecule)}")
     return new_molecule
 
-def check_target(target_struct: Target) -> tuple[ str, list[str] ]:
-    return ('wrong', [])
+def check_target(target_struct: Target) -> tuple[ bool, str ]:
+    rule_type, start, end, target = target_struct
+    futures = False
+    true_source: Optional[str] = contraction.get(tuple(target), None)
+    if true_source is None:
+        return (False, "")
+    # we only need to look for other options if
+    # rule is unconstrained
+    if rule_type != '(aa)':
+        for destination, source in contraction.items():
+            if source == true_source:
+                continue
+            if len(destination) != len(target):
+                continue
+            # finding any futures means what we find goes in possibilities
+            if rule_type == 'aa':
+                # either one could change
+                if (destination[0][1], destination[1][0]) == (target[0][1], target[1][0]):
+                    futures = True
+                    break
+            elif rule_type == "a(a.a)":
+                if destination[0][-1] == target[0][-1]:
+                    futures = True
+                    break
+
+    # we have one change but might it not be the true change
+    # keep looking for options
+    if futures:
+        # print(f"multiple future options for {join(target)}")
+        possibilities.append( (target_struct, true_source) )
+        return (False, true_source)
+
+    # this one works, replace and proceed
+    return (True, true_source)
 
 while frontier:
     new_frontier: list[State] = []
@@ -180,42 +212,14 @@ while frontier:
         if targets:
             # break out of this if we find one that definitely fits
             for target_struct in targets:
-                # certain, source = check_target(target_struct)
-                rule_type, start, end, target = target_struct
-                futures = False
-                true_source: Optional[str] = contraction.get(tuple(target), None)
-                if true_source is None:
-                    continue
-                # we only need to look for other options if
-                # rule is unconstrained
-                if rule_type != '(aa)':
-                    for destination, source in contraction.items():
-                        if source == true_source:
-                            continue
-                        if len(destination) != len(target):
-                            continue
-                        # finding any futures means what we find goes in possibilities
-                        if rule_type == 'aa':
-                            # either one could change
-                            if (destination[0][1], destination[1][0]) == (target[0][1], target[1][0]):
-                                futures = True
-                                break
-                        elif rule_type == "a(a.a)":
-                            if destination[0][-1] == target[0][-1]:
-                                futures = True
-                                break
-
-                # we have one change but might it not be the true change
-                # keep looking for options
-                if futures:
-                    # print(f"multiple future options for {join(target)}")
-                    possibilities.append( (target_struct, true_source) )
-                    continue
-
-                # this one works, replace and proceed
-                replacement = true_source
-                certain = True
-                break
+                # this either returns no replacement, a definite, or a maybe
+                certain, true_source = check_target(target_struct)
+                if true_source:
+                    if certain:
+                        replacement = true_source
+                        break
+                    else:
+                        possibilities.append( (target_struct, true_source) )
         if certain:
             # we found a match that definitely works
             new_molecule = apply_change(molecule, replacement, target_struct)
