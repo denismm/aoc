@@ -58,10 +58,10 @@ with open(filename, 'r') as f:
             else:
                 molecule = line.split()
 
-reverse_replacement: dict[tuple[str, ...], str] = {}
+contraction: dict[tuple[str, ...], str] = {}
 for source, dests in replacements.items():
     for dest_atoms in dests:
-        reverse_replacement[tuple(dest_atoms)] = source
+        contraction[tuple(dest_atoms)] = source
 
 for orig_atom, new_atom in substitutions.items():
     print(f"{orig_atom}:\t{new_atom} => { [ join(rep) for rep in replacements[new_atom]] }")
@@ -210,14 +210,14 @@ while frontier:
                 rule_type, start, end, target = target_struct
                 sources: list[str] = []
                 futures = 0
-                true_source: Optional[str] = reverse_replacement.get(tuple(target), None)
+                true_source: Optional[str] = contraction.get(tuple(target), None)
                 if true_source is None:
                     continue
                 sources.append(true_source)
                 # we only need to look for other options if
                 # rule is unconstrained
                 if rule_type != '(aa)':
-                    for destination, source in reverse_replacement.items():
+                    for destination, source in contraction.items():
                         if source == true_source:
                             continue
                         if len(destination) != len(target):
