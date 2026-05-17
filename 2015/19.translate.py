@@ -197,10 +197,11 @@ while frontier:
             end_at = -1
         targets = find_targets(molecule, start_at, end_at)
         # figure out correct replacement
+        replacement: str = ""
         if targets:
             # break out of this if we find one that definitely fits
             for target_struct in targets:
-                # answer, options = check_target(target_struct)
+                # certain, source = check_target(target_struct)
                 rule_type, start, end, target = target_struct
                 sources: list[str] = []
                 futures = 0
@@ -234,11 +235,12 @@ while frontier:
                     continue
 
                 # this one works, replace and proceed
-                new_molecule = apply_change(molecule, sources[0], target_struct)
+                replacement = sources[0]
                 certain = True
                 break
         if certain:
             # we found a match that definitely works
+            new_molecule = apply_change(molecule, replacement, target_struct)
             if tuple(new_molecule) not in seen:
                 new_frontier.append( (steps + 1, new_molecule) )
                 seen.add(tuple(new_molecule))
