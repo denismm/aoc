@@ -58,6 +58,11 @@ with open(filename, 'r') as f:
             else:
                 molecule = line.split()
 
+reverse_replacement: dict[tuple[str, ...], str] = {}
+for source, dests in replacements.items():
+    for dest_atoms in dests:
+        reverse_replacement[tuple(dest_atoms)] = source
+
 for orig_atom, new_atom in substitutions.items():
     print(f"{orig_atom}:\t{new_atom} => { [ join(rep) for rep in replacements[new_atom]] }")
 
@@ -205,25 +210,30 @@ while frontier:
                 rule_type, start, end, target = target_struct
                 sources: list[str] = []
                 futures = 0
-                for source, destinations in replacements.items():
-                    for destination in destinations:
-                        # add the correct match
-                        if destination == target:
-                            sources.append(source)
-                        # note future matches for aa
-                        elif rule_type == 'aa' and '(' not in destination:
+                true_source: Optional[str] = reverse_replacement.get(tuple(target), None)
+                if true_source is None:
+                    continue
+                sources.append(true_source)
+                # we only need to look for other options if
+                # rule is unconstrained
+                if rule_type != '(aa)':
+                    for destination, source in reverse_replacement.items():
+                        if source == true_source:
+                            continue
+                        if len(destination) != len(target):
+                            continue
+                        if rule_type == 'aa':
                             # either one could change
                             if (destination[0][1], destination[1][0]) == (target[0][1], target[1][0]):
                                 # print(f"{start}: {join(target)}: future match with  {join(destination)} => {source}")
                                 # this means anything else we find just goes in possibilities
                                 futures += 1
-                        # note future matches for a(a.a)
-                        elif rule_type == 'a(a.a)' and '(' in destination:
+                        elif rule_type == "a(a.a)":
                             if destination[0][-1] == target[0][-1]:
                                 futures += 1
                 if len(sources) != 1:
                     if len(sources) > 1:
-                        raise(f"found multiple matches for {join(target)}: {sources=}")
+                        raise ValueError(f"found multiple matches for {join(target)}: {sources=}")
                     # no sources here, move on to next target
                     continue
 
