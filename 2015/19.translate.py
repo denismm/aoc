@@ -154,40 +154,44 @@ def apply_change(molecule: Molecule, source: str, target_struct: Target) -> Mole
     return tuple(new_molecule)
 
 # memoize on rule_type, target
+target_cache: dict[tuple[str, Molecule], tuple[bool, str]] = {}
 def check_target(target_struct: Target) -> tuple[ bool, str ]:
     rule_type, start, end, target = target_struct
-    futures = False
-    true_source: Optional[str] = contraction.get(target, None)
-    if true_source is None:
-        return (False, "")
-    # we only need to look for other options if
-    # rule is unconstrained
-    if rule_type != '(aa)':
-        for destination, source in contraction.items():
-            if source == true_source:
-                continue
-            if len(destination) != len(target):
-                continue
-            # finding any futures means what we find goes in possibilities
-            if rule_type == 'aa':
-                # either one could change
-                if (destination[0][1], destination[1][0]) == (target[0][1], target[1][0]):
-                    futures = True
-                    break
-            elif rule_type == "a(a.a)":
-                if destination[0][-1] == target[0][-1]:
-                    futures = True
-                    break
+    lookup = (rule_type, target)
+    if lookup not in target_cache:
+        futures = False
+        true_source: Optional[str] = contraction.get(target, None)
+        if true_source is None:
+            return (False, "")
+        # we only need to look for other options if
+        # rule is unconstrained
+        if rule_type != '(aa)':
+            for destination, source in contraction.items():
+                if source == true_source:
+                    continue
+                if len(destination) != len(target):
+                    continue
+                # finding any futures means what we find goes in possibilities
+                if rule_type == 'aa':
+                    # either one could change
+                    if (destination[0][1], destination[1][0]) == (target[0][1], target[1][0]):
+                        futures = True
+                        break
+                elif rule_type == "a(a.a)":
+                    if destination[0][-1] == target[0][-1]:
+                        futures = True
+                        break
 
-    # we have one change but might it not be the true change
-    # keep looking for options
-    if futures:
-        # print(f"multiple future options for {join(target)}")
-        possibilities.append( (target_struct, true_source) )
-        return (False, true_source)
+        # we have one change but might it not be the true change
+        # keep looking for options
+        if futures:
+            # print(f"multiple future options for {join(target)}")
+            possibilities.append( (target_struct, true_source) )
+            target_cache[lookup] = (False, true_source)
 
-    # this one works, replace and proceed
-    return (True, true_source)
+        # this one works, replace and proceed
+        target_cache[lookup] = (True, true_source)
+    return target_cache[lookup]
 
 while frontier:
     new_frontier: list[State] = []
