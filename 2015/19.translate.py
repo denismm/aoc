@@ -205,25 +205,28 @@ while frontier:
                 futures = 0
                 for source, destinations in replacements.items():
                     for destination in destinations:
+                        # add the correct match
                         if destination == target:
                             sources.append(source)
+                        # note future matches for aa
                         elif rule_type == 'aa' and '(' not in destination:
                             # either one could change
                             if (destination[0][1], destination[1][0]) == (target[0][1], target[1][0]):
                                 # print(f"{start}: {join(target)}: future match with  {join(destination)} => {source}")
                                 # this means anything else we find just goes in possibilities
                                 futures += 1
+                        # note future matches for a(a.a)
                         elif rule_type == 'a(a.a)' and '(' in destination:
                             if destination[0][-1] == target[0][-1]:
                                 futures += 1
                 if len(sources) != 1:
-                    # print(f"can't replace {join(target)}: {sources=}")
-                    for source in sources:
-                        if target_struct[3][0][0] != source[0]:
-                            raise ValueError(f"Bad replacement! {join(target_struct[3])} => {source}")
-                        possibilities.append( (target_struct, source) )
+                    if len(sources) > 1:
+                        raise(f"found multiple matches for {join(target)}: {sources=}")
+                    # no sources here, move on to next target
                     continue
+
                 # we have one change but might it not be the true change
+                # keep looking for options
                 if futures:
                     # print(f"multiple future options for {join(target)}")
                     possibilities.append( (target_struct, sources[0]) )
@@ -232,11 +235,12 @@ while frontier:
                 # this one works, replace and proceed
                 new_molecule = apply_change(molecule, sources[0], target_struct)
                 certain = True
-                if tuple(new_molecule) not in seen:
-                    new_frontier.append( (steps + 1, new_molecule) )
-                    seen.add(tuple(new_molecule))
                 break
-        if not certain:
+        if certain:
+            if tuple(new_molecule) not in seen:
+                new_frontier.append( (steps + 1, new_molecule) )
+                seen.add(tuple(new_molecule))
+        else:
             if False and end_at - start_at > len(molecule) / 2:
                 print(join(molecule))
                 print(len(possibilities))
