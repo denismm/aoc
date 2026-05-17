@@ -157,35 +157,37 @@ def check_target(target_struct: Target) -> tuple[ bool, str ]:
         futures = False
         true_source: Optional[str] = contraction.get(target, None)
         if true_source is None:
-            return (False, "")
-        # we only need to look for other options if
-        # rule is unconstrained
-        if rule_type != '(aa)':
-            for destination, source in contraction.items():
-                if source == true_source:
-                    continue
-                if len(destination) != len(target):
-                    continue
-                # finding any futures means what we find goes in possibilities
-                if rule_type == 'aa':
-                    # either one could change
-                    if (destination[0][1], destination[1][0]) == (target[0][1], target[1][0]):
-                        futures = True
-                        break
-                elif rule_type == "a(a.a)":
-                    if destination[0][-1] == target[0][-1]:
-                        futures = True
-                        break
+            target_cache[lookup] = (False, "")
+        else:
+            # we only need to look for other options if
+            # rule is unconstrained
+            if rule_type != '(aa)':
+                for destination, source in contraction.items():
+                    if source == true_source:
+                        continue
+                    if len(destination) != len(target):
+                        continue
+                    # finding any futures means what we find goes in possibilities
+                    if rule_type == 'aa':
+                        # either one could change
+                        if (destination[0][1], destination[1][0]) == (target[0][1], target[1][0]):
+                            futures = True
+                            break
+                    elif rule_type == "a(a.a)":
+                        if destination[0][-1] == target[0][-1]:
+                            futures = True
+                            break
 
-        # we have one change but might it not be the true change
-        # keep looking for options
-        if futures:
-            # print(f"multiple future options for {join(target)}")
-            possibilities.append( (target_struct, true_source) )
-            target_cache[lookup] = (False, true_source)
+            # we have one change but might it not be the true change
+            # keep looking for options
+            if futures:
+                # print(f"multiple future options for {join(target)}")
+                possibilities.append( (target_struct, true_source) )
+                target_cache[lookup] = (False, true_source)
 
-        # this one works, replace and proceed
-        target_cache[lookup] = (True, true_source)
+            else:
+                # this one works, replace and proceed
+                target_cache[lookup] = (True, true_source)
     return target_cache[lookup]
 
 State = tuple[int, Molecule]   # steps and molecule
@@ -237,7 +239,7 @@ while stack:
             seen.add(new_molecule)
     else:
         # if we got here we have possibilities
-        print(f"adding {len(possibilities)}, constrained to {join(zone_atoms)} at {start_at}:{end_at} of {len(molecule)} <{join(molecule[start_at - 1:end_at + 1])}>")
+        # print(f"adding {len(possibilities)}, constrained to {join(zone_atoms)} at {start_at}:{end_at} of {len(molecule)} <{join(molecule[start_at - 1:end_at + 1])}>")
         for possibility in possibilities:
             target_struct, source = possibility
             new_molecule = apply_change(molecule, source, target_struct)
