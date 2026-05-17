@@ -61,7 +61,7 @@ with open(filename, 'r') as f:
 contraction: dict[tuple[str, ...], str] = {}
 for source, dests in replacements.items():
     for dest_atoms in dests:
-        contraction[tuple(dest_atoms)] = source
+        contraction[dest_atoms] = source
 
 for orig_atom, new_atom in substitutions.items():
     print(f"{orig_atom}:\t{new_atom} => { [ join(rep) for rep in replacements[new_atom]] }")
@@ -139,7 +139,7 @@ def find_targets(mol: tuple[str, ...], start_from: int = 0, end_at: int = -1) ->
 
 State = tuple[int, tuple[str, ...]]   # steps and molecule
 frontier: list[State] = [ (0, molecule) ]
-seen: set[tuple[str, ...]] = { tuple(molecule) }
+seen: set[tuple[str, ...]] = { molecule }
 # should be no way to reach same state with different step count
 
 def apply_change(molecule: tuple[str, ...], source: str, target_struct: Target) -> tuple[str, ...]:
@@ -151,10 +151,11 @@ def apply_change(molecule: tuple[str, ...], source: str, target_struct: Target) 
     # print(f"{start}: {join(target)} => {source} : {join(new_molecule)}")
     return tuple(new_molecule)
 
+# memoize on rule_type, target
 def check_target(target_struct: Target) -> tuple[ bool, str ]:
     rule_type, start, end, target = target_struct
     futures = False
-    true_source: Optional[str] = contraction.get(tuple(target), None)
+    true_source: Optional[str] = contraction.get(target, None)
     if true_source is None:
         return (False, "")
     # we only need to look for other options if
@@ -223,9 +224,9 @@ while frontier:
         if certain:
             # we found a match that definitely works
             new_molecule = apply_change(molecule, replacement, target_struct)
-            if tuple(new_molecule) not in seen:
+            if new_molecule not in seen:
                 new_frontier.append( (steps + 1, new_molecule) )
-                seen.add(tuple(new_molecule))
+                seen.add(new_molecule)
         else:
             if False and end_at - start_at > len(molecule) / 2:
                 print(join(molecule))
@@ -237,9 +238,9 @@ while frontier:
             for possibility in possibilities:
                 target_struct, source = possibility
                 new_molecule = apply_change(molecule, source, target_struct)
-                if tuple(new_molecule) not in seen:
+                if new_molecule not in seen:
                     new_frontier.append( (steps + 1, new_molecule) )
-                    seen.add(tuple(new_molecule))
+                    seen.add(new_molecule)
     if not new_frontier:
         print("finals")
         for state in frontier:
