@@ -198,6 +198,7 @@ while frontier:
         targets = find_targets(molecule, start_at, end_at)
         # figure out correct replacement
         if targets:
+            # break out of this if we find one that definitely fits
             for target_struct in targets:
                 # answer, options = check_target(target_struct)
                 rule_type, start, end, target = target_struct
@@ -232,6 +233,7 @@ while frontier:
                 certain = True
                 break
         if certain:
+            # we found a match that definitely works
             if tuple(new_molecule) not in seen:
                 new_frontier.append( (steps + 1, new_molecule) )
                 seen.add(tuple(new_molecule))
