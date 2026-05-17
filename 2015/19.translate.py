@@ -223,6 +223,11 @@ while frontier:
                 if len(sources) != 1:
                     if len(sources) > 1:
                         raise(f"found multiple matches for {join(target)}: {sources=}")
+                    # no sources here, move on to next target
+                    continue
+
+                # we have one change but might it not be the true change
+                # keep looking for options
                 if futures:
                     # print(f"multiple future options for {join(target)}")
                     possibilities.append( (target_struct, sources[0]) )
