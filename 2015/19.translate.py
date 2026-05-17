@@ -152,32 +152,6 @@ def apply_change(molecule: list[str], source: str, target_struct: Target) -> lis
     return new_molecule
 
 def check_target(target_struct: Target) -> tuple[ str, list[str] ]:
-    rule_type, start, end, target = target_struct
-    sources: list[str] = []
-    futures = 0
-    for source, destinations in replacements.items():
-        for destination in destinations:
-            if destination == target:
-                sources.append(source)
-            elif rule_type == 'aa' and '(' not in destination:
-                # either one could change
-                if (destination[0][1], destination[1][0]) == (target[0][1], target[1][0]):
-                    # print(f"{start}: {join(target)}: future match with  {join(destination)} => {source}")
-                    # this means anything else we find just goes in possibilities
-                    futures += 1
-            elif rule_type == 'a(a.a)' and '(' in destination:
-                if destination[0][-1] == target[0][-1]:
-                    futures += 1
-    if len(sources) != 1:
-        # print(f"can't replace {join(target)}: {sources=}")
-        for source in sources:
-            if target_struct[3][0][0] != source[0]:
-                raise ValueError(f"Bad replacement! {join(target_struct[3])} => {source}")
-            possibilities.append( (target_struct, source) )
-    # we have one change but might it not be the true change
-    if futures:
-        # print(f"multiple future options for {join(target)}")
-        possibilities.append( (target_struct, sources[0]) )
     return ('wrong', [])
 
 while frontier:
@@ -208,12 +182,10 @@ while frontier:
             for target_struct in targets:
                 # certain, source = check_target(target_struct)
                 rule_type, start, end, target = target_struct
-                sources: list[str] = []
-                futures = 0
+                futures = False
                 true_source: Optional[str] = contraction.get(tuple(target), None)
                 if true_source is None:
                     continue
-                sources.append(true_source)
                 # we only need to look for other options if
                 # rule is unconstrained
                 if rule_type != '(aa)':
@@ -222,30 +194,26 @@ while frontier:
                             continue
                         if len(destination) != len(target):
                             continue
+                        # finding any futures means what we find goes in possibilities
                         if rule_type == 'aa':
                             # either one could change
                             if (destination[0][1], destination[1][0]) == (target[0][1], target[1][0]):
-                                # print(f"{start}: {join(target)}: future match with  {join(destination)} => {source}")
-                                # this means anything else we find just goes in possibilities
-                                futures += 1
+                                futures = True
+                                break
                         elif rule_type == "a(a.a)":
                             if destination[0][-1] == target[0][-1]:
-                                futures += 1
-                if len(sources) != 1:
-                    if len(sources) > 1:
-                        raise ValueError(f"found multiple matches for {join(target)}: {sources=}")
-                    # no sources here, move on to next target
-                    continue
+                                futures = True
+                                break
 
                 # we have one change but might it not be the true change
                 # keep looking for options
                 if futures:
                     # print(f"multiple future options for {join(target)}")
-                    possibilities.append( (target_struct, sources[0]) )
+                    possibilities.append( (target_struct, true_source) )
                     continue
 
                 # this one works, replace and proceed
-                replacement = sources[0]
+                replacement = true_source
                 certain = True
                 break
         if certain:
