@@ -237,6 +237,10 @@ while frontier:
                     seen.add(tuple(new_molecule))
                 break
         if not certain:
+            if False and end_at - start_at > len(molecule) / 2:
+                print(join(molecule))
+                print(len(possibilities))
+                exit(0)
             # if we got here we have possibilities
             if len(possibilities) > 10 and False:
                 print(f"adding {len(possibilities)}, constrained to {join(zone_atoms)} at {start_at}:{end_at} of {len(molecule)} <{join(molecule[start_at - 1:end_at + 1])}>")
