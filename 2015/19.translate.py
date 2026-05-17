@@ -15,7 +15,7 @@ element_grid: list[list[str]] = [
     "F  Ca P  Si".split(),
     "Al Th zz zz".split(),
     "Mg B  Ti zz".split(),
-    "zz H  N  O ".split(),
+    "e  H  N  O ".split(),
 ]
 substitutions: dict[str, str] = {}
 caps = "UVWX"
@@ -27,12 +27,12 @@ for i in range(4):
             continue
         substitutions[element] = caps[i] + lows[j]
 
-substitutions['C'] = "*"
+substitutions['C'] = "Xf"
 substitutions['Ar'] = ")"
 substitutions['Rn'] = '('
 substitutions['Y'] = '.'
 
-terminals = ("(", ".", ")", "*")
+terminals = ("(", ".", ")")
 starts = ("(", ".")
 ends = (".", ")")
 filling = [ atom for atom in substitutions.values() if atom not in terminals ]
@@ -40,7 +40,7 @@ filling = [ atom for atom in substitutions.values() if atom not in terminals ]
 def substitute(m: re.Match[str]) -> str:
     return substitutions[m.group(0)] + " "
 
-element_re = re.compile(r'[A-Z][a-z]?')
+element_re = re.compile(r'[A-Ze][a-z]?')
 
 replacements: dict[str, list[Molecule]] = defaultdict(list)
 start_molecule: Molecule = ()
