@@ -2,7 +2,6 @@
 import sys
 import re
 from collections import defaultdict
-from tqdm import tqdm
 from typing import Optional
 
 # based on analysis - other inputs might map this differently
@@ -198,10 +197,10 @@ seen: set[Molecule] = { start_molecule }
 smallest_length = len(start_molecule)
 
 while stack:
-    print(len(stack))
     steps, molecule = stack.pop()
     if len(molecule) < smallest_length:
-        print(f"{steps}: {len(molecule)} {join(molecule)}")
+        print(f"{steps}: {len(molecule)} {join(molecule)} ({len(stack)})")
+        smallest_length = len(molecule)
     if len(molecule) == 1:
         exit(0)
     for i, atom in enumerate(molecule):
