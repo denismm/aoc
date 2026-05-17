@@ -7,6 +7,8 @@ from typing import Optional
 
 # based on analysis - other inputs might map this differently
 
+Molecule = tuple[str, ...]
+
 element_grid: list[list[str]] = [
     "F  Ca P  Si".split(),
     "Al Th zz zz".split(),
@@ -38,10 +40,10 @@ def substitute(m: re.Match[str]) -> str:
 
 element_re = re.compile(r'[A-Z][a-z]?')
 
-replacements: dict[str, list[tuple[str, ...]]] = defaultdict(list)
-molecule: tuple[str, ...] = ()
+replacements: dict[str, list[Molecule]] = defaultdict(list)
+molecule: Molecule = ()
 
-def join(molecule: tuple[str, ...]) -> str:
+def join(molecule: Molecule) -> str:
     return " ".join(molecule)
 
 filename = sys.argv[1]
@@ -58,7 +60,7 @@ with open(filename, 'r') as f:
             else:
                 molecule = tuple(line.split())
 
-contraction: dict[tuple[str, ...], str] = {}
+contraction: dict[Molecule, str] = {}
 for source, dests in replacements.items():
     for dest_atoms in dests:
         contraction[dest_atoms] = source
@@ -74,9 +76,9 @@ if len(sys.argv) > 2:
 print(join(molecule))
 
 # target type, start, post-end, atoms
-Target = tuple[str, int, int, tuple[str, ...]]
+Target = tuple[str, int, int, Molecule]
 
-def find_zone(mol: tuple[str, ...]) -> Optional[Target]:
+def find_zone(mol: Molecule) -> Optional[Target]:
     # Try to find smallest section of 2 or more atoms bound by terminals
     # that won't change.  Don't include start or end, if whole mol
     # is zone we want the "aa" options below
@@ -107,7 +109,7 @@ def find_zone(mol: tuple[str, ...]) -> Optional[Target]:
                                 paren_level -= 1
     return smallest
 
-def find_targets(mol: tuple[str, ...], start_from: int = 0, end_at: int = -1) -> list[Target]:
+def find_targets(mol: Molecule, start_from: int = 0, end_at: int = -1) -> list[Target]:
     """
     Each target is the type of rule,
     the start and post-end of the replaceable section,
@@ -137,12 +139,12 @@ def find_targets(mol: tuple[str, ...], start_from: int = 0, end_at: int = -1) ->
     return targets
 
 
-State = tuple[int, tuple[str, ...]]   # steps and molecule
+State = tuple[int, Molecule]   # steps and molecule
 frontier: list[State] = [ (0, molecule) ]
-seen: set[tuple[str, ...]] = { molecule }
+seen: set[Molecule] = { molecule }
 # should be no way to reach same state with different step count
 
-def apply_change(molecule: tuple[str, ...], source: str, target_struct: Target) -> tuple[str, ...]:
+def apply_change(molecule: Molecule, source: str, target_struct: Target) -> Molecule:
     rule_time, start, end, target = target_struct
     new_molecule = list(molecule)
     new_molecule[start : end] = [source]
