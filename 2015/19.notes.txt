@@ -155,16 +155,10 @@ this is insufficient to get to 0 and there are wrong paths
 so either do a sure thing or add all the possibilities to the frontier
 
 this is too slow so constrain to a zone (atoms surrounded by (. .)) if possible
-this is hitting an error here:
-    . Wb Uc Wb Uc Wc ( Ud ( Wa ) Ud Vb Ub Ua ) Ub Ud Vb Ua )
-manually:
-    Ub  => Ud ( Wa ) :  . Wb Uc Wb Uc Wc ( Ub Ud Vb Ub Ua ) Ub Ud Vb Ua )
-    ? Ud  => Ub Ud : . Wb Uc Wb Uc Wc ( Ud Vb Ub Ua ) Ub Ud Vb Ua )
-    Ub  => Ud Vb : . Wb Uc Wb Uc Wc ( Ub Ub Ua ) Ub Ud Vb Ua )
-    Ub  => Ub Ub : . Wb Uc Wb Uc Wc ( Ub Ua ) Ub Ud Vb Ua )
-    Ua  => Ub Ua : . Wb Uc Wb Uc Wc ( Ua ) Ub Ud Vb Ua )
-    ? Wc => Wb Uc : . Wc Wb Uc Wc ( Ua ) Ub Ud Vb Ua )
-    Wb  => Wc Wb : . Wb Uc Wc ( Ua ) Ub Ud Vb Ua )
-    Wc  => Wb Uc : . Wc Wc ( Ua ) Ub Ud Vb Ua )
-    Wc  => Wc Wc : . Wc ( Ua ) Ub Ud Vb Ua )
-    Wb  => Wc ( Ua ) : . Wb Ub Ud Vb Ua )
+
+that was still too slow so I went to depth-first
+
+had to change the translation so e was Xa 
+and C was Xg since it's an X but only appears at the start of x(x.x) rules
+
+runs in 100 ms
