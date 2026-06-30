@@ -7,8 +7,11 @@ Direction = Position
 
 SetGrid = set[Position]
 StrGrid = dict[Position, str]
+IntGrid = dict[Position, int]
 FrozenSetGrid = frozenset[Position]
 AnySetGrid = Iterable[Position]
+
+ORIGIN: Position = (0, 0)
 
 # grid operations
 
