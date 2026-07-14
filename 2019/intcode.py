@@ -8,11 +8,16 @@ def read_program(filename: str) -> Program:
     return start_memory
 
 Operation = tuple[str, int]
+# int is number of steps so parameters + 1
 opcodes: dict[int, Operation] = {
     1: ("+", 4),
     2: ("*", 4),
     3: ("in", 2),
     4: ("out", 2),
+    5: ("jump-if-true", 3),
+    6: ("jump-if-false", 3),
+    7: ("<", 4),
+    8: ("=", 4),
     99: ("halt", 1),
 }
 
@@ -50,7 +55,7 @@ def run_program(start_memory: Program, input_queue: Optional[list[int]] = None) 
         if action == 'halt':
             break
         elif action in {"*", "+"}:
-            a_addr, b_addr, out_addr = parameters
+            _, _, out_addr = parameters
             a = get_value(0)
             b = get_value(1)
             if action == '+':
@@ -66,6 +71,23 @@ def run_program(start_memory: Program, input_queue: Optional[list[int]] = None) 
             memory[out_addr] = data
         elif action == 'out':
             output_queue.append(get_value(0))
+        elif action in {"<", "="}:
+            a = get_value(0)
+            b = get_value(1)
+            result: bool
+            if action == "<":
+                result = a < b
+            elif action == "=":
+                result = a == b
+            memory[parameters[2]] = int(result)
+        elif action.startswith("jump-if"):
+            test = bool(get_value(0))
+            if action == 'jump-if-false':
+                test = not test
+            if test:
+                ip = get_value(1)
+                # skip increment
+                continue
         else:
             raise ValueError(f"unknown opcode at {ip=} {action=}")
         ip += step
