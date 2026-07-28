@@ -1,5 +1,5 @@
 from typing import Optional
-import collections.abc
+from collections.abc import Iterable, Iterator
 import dataclasses
 
 Program = list[int]
@@ -25,13 +25,13 @@ opcodes: dict[int, Operation] = {
 
 class IntCodeComputer:
     memory: Program
-    input_source: collections.abc.Iterator[int]
+    input_source: Iterator[int]
 
-    def __init__(self, start_memory: Program, input_source: collections.abc.Iterable[int]) -> None:
+    def __init__(self, start_memory: Program, input_source: Iterable[int]) -> None:
         self.memory = list(start_memory)
         self.input_source = iter(input_source)
 
-    def run(self) -> collections.abc.Iterable[int]:
+    def run(self) -> Iterable[int]:
         ip = 0
 
         parameters: list[int] = []
