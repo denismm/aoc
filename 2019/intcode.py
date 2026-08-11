@@ -23,13 +23,21 @@ opcodes: dict[int, Operation] = {
     99: ("halt", 1),
 }
 
+verbose: bool = False
+
 class IntCodeComputer:
     memory: Program
     input_source: Iterator[int]
+    name: str
+    seen: list[int]
+    sent: list[int]
 
-    def __init__(self, start_memory: Program, input_source: Iterable[int]) -> None:
+    def __init__(self, start_memory: Program, input_source: Iterable[int], name: Any = None) -> None:
         self.memory = list(start_memory)
         self.input_source = iter(input_source)
+        self.name = str(name)
+        self.seen = []
+        self.sent = []
 
     def run(self) -> Iterable[int]:
         ip = 0
@@ -55,9 +63,13 @@ class IntCodeComputer:
             (action, step) = operation
             modes = list(reversed(str(mode_int)))
             parameters = self.memory[ ip+1 : ip+step]
+            if verbose:
+                print(f"{self.name} ({ip}): {action} {modes} {parameters}")
             if len(modes) < len(parameters):
                 modes += ("0") * (len(parameters) - len(modes))
             if action == 'halt':
+                if verbose:
+                    print(f"{self.name} got halt")
                 break
             elif action in {"*", "+"}:
                 _, _, out_addr = parameters
@@ -72,10 +84,13 @@ class IntCodeComputer:
                 self.memory[out_addr] = out
             elif action == 'in':
                 data = next(self.input_source)
+                self.seen.append(data)
                 out_addr = parameters[0]
                 self.memory[out_addr] = data
             elif action == 'out':
-                yield (get_value(0))
+                data = get_value(0)
+                self.sent.append(data)
+                yield (data)
             elif action in {"<", "="}:
                 a = get_value(0)
                 b = get_value(1)
@@ -96,6 +111,7 @@ class IntCodeComputer:
             else:
                 raise ValueError(f"unknown opcode at {ip=} {action=}")
             ip += step
+        # print(f"{self.name} halted")
 
 def run_program(start_memory: Program, input_queue: Optional[list[int]] = None) -> tuple[Program, list[int]]:
     if input_queue is None:
