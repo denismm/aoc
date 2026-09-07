@@ -1,13 +1,20 @@
 from typing import Optional
 from collections.abc import Iterable, Iterator
+from collections import Counter
 import dataclasses
 
-Program = list[int]
+Program = Counter[int]
+
+verbose: bool = True
 
 def read_program(filename: str) -> Program:
     with open(filename, 'r') as f:
-        start_memory: Program = [int(s) for s in f.read().rstrip().split(',')]
-    return start_memory
+        instructions: list[int] = [int(s) for s in f.read().rstrip().split(',')]
+    program: Program = {i: x for (i, x) in enumerate(instructions)}
+    if verbose:
+        print(f"{instructions=}")
+        print(f"{program=}")
+    return program
 
 Operation = tuple[str, int]
 # int is number of steps so parameters + 1
@@ -23,8 +30,6 @@ opcodes: dict[int, Operation] = {
     99: ("halt", 1),
 }
 
-verbose: bool = False
-
 class IntCodeComputer:
     memory: Program
     input_source: Iterator[int]
@@ -33,7 +38,7 @@ class IntCodeComputer:
     sent: list[int]
 
     def __init__(self, start_memory: Program, input_source: Iterable[int], name: Any = None) -> None:
-        self.memory = list(start_memory)
+        self.memory = dict(start_memory)
         self.input_source = iter(input_source)
         self.name = str(name)
         self.seen = []
@@ -51,6 +56,8 @@ class IntCodeComputer:
             if mode == '1':
                 return param
             elif mode == '0':
+                if param < 0:
+                    raise ValueError(f"attempt to read negative address {param}")
                 return self.memory[param]
             else:
                 raise ValueError(f"unknown mode {mode}")
@@ -59,10 +66,14 @@ class IntCodeComputer:
             raw_instruction: int = self.memory[ip]
             mode_int: int = raw_instruction // 100
             instruction: int = raw_instruction % 100
+            if verbose:
+                print(f"{raw_instruction} => {mode_int} : {instruction}")
             operation: Operation = opcodes[instruction]
             (action, step) = operation
             modes = list(reversed(str(mode_int)))
-            parameters = self.memory[ ip+1 : ip+step]
+            parameters: list[int] = []
+            for i in range(1, step):
+                parameters.append( self.memory[ ip+i ] )
             if verbose:
                 print(f"{self.name} ({ip}): {action} {modes} {parameters}")
             if len(modes) < len(parameters):
@@ -106,6 +117,8 @@ class IntCodeComputer:
                     test = not test
                 if test:
                     ip = get_value(1)
+                    if ip < 0:
+                        raise ValueError(f"jump to negative address {ip}")
                     # skip increment
                     continue
             else:
