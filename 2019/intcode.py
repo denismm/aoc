@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 from collections.abc import Iterable, Iterator
 from collections import Counter
 import dataclasses
@@ -10,8 +10,8 @@ verbose: bool = True
 def read_program(filename: str) -> Program:
     with open(filename, 'r') as f:
         instructions: list[int] = [int(s) for s in f.read().rstrip().split(',')]
-    program: Program = {i: x for (i, x) in enumerate(instructions)}
-    if verbose:
+    program: Program = Counter({i: x for (i, x) in enumerate(instructions)})
+    if verbose and False:
         print(f"{instructions=}")
         print(f"{program=}")
     return program
@@ -27,6 +27,7 @@ opcodes: dict[int, Operation] = {
     6: ("jump-if-false", 3),
     7: ("<", 4),
     8: ("=", 4),
+    9: ("rel-adjust", 2),
     99: ("halt", 1),
 }
 
@@ -38,11 +39,12 @@ class IntCodeComputer:
     sent: list[int]
 
     def __init__(self, start_memory: Program, input_source: Iterable[int], name: Any = None) -> None:
-        self.memory = dict(start_memory)
+        self.memory = Counter(start_memory)
         self.input_source = iter(input_source)
         self.name = str(name)
         self.seen = []
         self.sent = []
+        self.relative_base = 0
 
     def run(self) -> Iterable[int]:
         ip = 0
@@ -55,6 +57,11 @@ class IntCodeComputer:
             mode = modes[position]
             if mode == '1':
                 return param
+            elif mode == '2':
+                target = self.relative_base + param
+                if target < 0:
+                    raise ValueError(f"attempt to read negative address {target}")
+                return self.memory[target]
             elif mode == '0':
                 if param < 0:
                     raise ValueError(f"attempt to read negative address {param}")
@@ -62,20 +69,35 @@ class IntCodeComputer:
             else:
                 raise ValueError(f"unknown mode {mode}")
 
+        def set_value(position: int, value: int) -> None:
+            param = parameters[position]
+            mode = modes[position]
+            if mode == '1':
+                raise ValueError("can't write in absolute mode")
+            elif mode == '2':
+                target = self.relative_base + param
+                if target < 0:
+                    raise ValueError(f"attempt to read negative address {target}")
+                self.memory[target] = value
+            elif mode == '0':
+                if param < 0:
+                    raise ValueError(f"attempt to read negative address {param}")
+                self.memory[param] = value
+            else:
+                raise ValueError(f"unknown mode {mode}")
+
         while True:
             raw_instruction: int = self.memory[ip]
             mode_int: int = raw_instruction // 100
             instruction: int = raw_instruction % 100
-            if verbose:
-                print(f"{raw_instruction} => {mode_int} : {instruction}")
             operation: Operation = opcodes[instruction]
             (action, step) = operation
             modes = list(reversed(str(mode_int)))
-            parameters: list[int] = []
+            parameters.clear()
             for i in range(1, step):
                 parameters.append( self.memory[ ip+i ] )
             if verbose:
-                print(f"{self.name} ({ip}): {action} {modes} {parameters}")
+                print(f"{self.name} ({ip}): {action=} {modes=} {parameters=} {self.relative_base=}")
             if len(modes) < len(parameters):
                 modes += ("0") * (len(parameters) - len(modes))
             if action == 'halt':
@@ -83,7 +105,6 @@ class IntCodeComputer:
                     print(f"{self.name} got halt")
                 break
             elif action in {"*", "+"}:
-                _, _, out_addr = parameters
                 a = get_value(0)
                 b = get_value(1)
                 if action == '+':
@@ -92,12 +113,11 @@ class IntCodeComputer:
                     out = a * b
                 else:
                     raise ValueError(f"unknown opcode at {ip=} {action=}")
-                self.memory[out_addr] = out
+                set_value(2, out)
             elif action == 'in':
                 data = next(self.input_source)
                 self.seen.append(data)
-                out_addr = parameters[0]
-                self.memory[out_addr] = data
+                set_value(0, data)
             elif action == 'out':
                 data = get_value(0)
                 self.sent.append(data)
@@ -110,7 +130,7 @@ class IntCodeComputer:
                     result = a < b
                 elif action == "=":
                     result = a == b
-                self.memory[parameters[2]] = int(result)
+                set_value(2, int(result))
             elif action.startswith("jump-if"):
                 test = bool(get_value(0))
                 if action == 'jump-if-false':
@@ -121,6 +141,9 @@ class IntCodeComputer:
                         raise ValueError(f"jump to negative address {ip}")
                     # skip increment
                     continue
+            elif action == 'rel-adjust':
+                a = get_value(0)
+                self.relative_base += a
             else:
                 raise ValueError(f"unknown opcode at {ip=} {action=}")
             ip += step
