@@ -131,12 +131,16 @@ def scale_position(pos: Position, scale: int) -> Position:
     return tuple(p * scale for p in pos)
 
 
+def scale_direction(dir: Direction, scale: int) -> Direction:
+    return tuple(d * scale for d in dir)
+
+
 def div_position(pos: Position, divisor: int) -> Position:
     return tuple(p // divisor for p in pos)
 
 
-def scale_direction(dir: Direction, scale: int) -> Direction:
-    return tuple(d * scale for d in dir)
+def div_direction(dir: Direction, divisor: int) -> Position:
+    return tuple(d // divisor for d in dir)
 
 
 def get_direction(source: Position, target: Position) -> Direction:
